@@ -1,0 +1,7 @@
+[MESSAGES CONTROL]
+disable=
+	unused-argument,
+	no-self-use,
+	too-few-public-methods,
+	fixme,
+	line-too-long
