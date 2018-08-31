@@ -1,9 +1,9 @@
 """ urls.py """
 
 from django.conf.urls import url
-from seb_open_edx import views
+from seb_openedx import views
 
 
 urlpatterns = [  # pylint: disable=invalid-name
-    url(r'^seb-open-edx$', views.info_view),
+    url(r'^seb-info$', views.info_view),
 ]

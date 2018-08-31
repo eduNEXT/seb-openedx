@@ -3,7 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.test import TestCase
-import seb_open_edx
+import seb_openedx
 
 JSON_CONTENT_TYPE = 'application/json'
 
@@ -14,4 +14,4 @@ class TestInfoView(TestCase):
     def test_version_is_present(self):
         """ Check that test version is present """
         response = self.client.get('/seb-open-edx')
-        self.assertContains(response, seb_open_edx.__version__)
+        self.assertContains(response, seb_openedx.__version__)

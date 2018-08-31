@@ -10,7 +10,7 @@ from subprocess import check_output, CalledProcessError
 from django.http import HttpResponse
 
 
-import seb_open_edx
+import seb_openedx
 
 
 def info_view(request):
@@ -25,8 +25,8 @@ def info_view(request):
         git_data = ''
 
     response_data = {
-        "version": seb_open_edx.__version__,
-        "name": "seb_open_edx",
+        "version": seb_openedx.__version__,
+        "name": "seb_openedx",
         "git": git_data.rstrip('\r\n'),
     }
     return HttpResponse(

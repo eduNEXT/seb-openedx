@@ -8,14 +8,14 @@ from django.apps import AppConfig
 
 class SebOpenEdxConfig(AppConfig):
     """App configuration"""
-    name = 'seb_open_edx'
+    name = 'seb_openedx'
     verbose_name = "eduNEXT Openedx Extensions"
 
     plugin_app = {
         'url_config': {
             'lms.djangoapp': {
-                'namespace': 'seb_open_edx',
-                'regex': r'^seb_open_edx/',
+                'namespace': 'seb-openedx',
+                'regex': r'^seb-openedx/',
                 'relative_path': 'urls',
             }
         },

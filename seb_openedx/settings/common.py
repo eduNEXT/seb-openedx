@@ -1,5 +1,5 @@
 """
-Settings for seb_open_edx
+Settings for seb_openedx
 """
 
 from __future__ import absolute_import, unicode_literals
@@ -15,7 +15,7 @@ INSTALLED_APPS = (
 
 def plugin_settings(settings):
     """
-    Defines seb_open_edx settings when app is used as a plugin to edx-platform.
+    Defines seb_openedx settings when app is used as a plugin to edx-platform.
     See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
     pass

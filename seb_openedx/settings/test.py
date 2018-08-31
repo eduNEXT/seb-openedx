@@ -1,5 +1,5 @@
 """
-Settings for seb_open_edx
+Settings for seb_openedx
 """
 
 from __future__ import absolute_import, unicode_literals
@@ -17,7 +17,7 @@ plugin_settings(SETTINGS)
 vars().update(SETTINGS.__dict__)
 
 
-ROOT_URLCONF = 'seb_open_edx.urls'
+ROOT_URLCONF = 'seb_openedx.urls'
 ALLOWED_HOSTS = ['*']
 
 # This key needs to be defined so that the check_apps_ready passes and the

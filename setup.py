@@ -20,15 +20,15 @@ def get_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-version = get_version("seb_open_edx", "__init__.py")
+version = get_version("seb_openedx", "__init__.py")
 
 
 setup(
-    name="seb_open_edx",
+    name="seb-openedx",
     version=version,
     author="eduNEXT",
     author_email="contact@edunext.co",
-    url="https://github.com/eduNEXT/seb_open_edx",
+    url="https://github.com/eduNEXT/seb_openedx",
     description="eduNEXT Openedx extensions",
     long_description="",
     install_requires=[],
@@ -36,11 +36,11 @@ setup(
     license="AGPL",
     platforms=["any"],
     zip_safe=False,
-    packages=['seb_open_edx'],
+    packages=['seb_openedx'],
     include_package_data=True,
     entry_points={
         "lms.djangoapp": [
-            "seb_open_edx = seb_open_edx.apps:SebOpenEdxConfig",
+            "seb_openedx = seb_openedx.apps:SebOpenEdxConfig",  # retain
         ],
     }
 )
