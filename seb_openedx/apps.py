@@ -10,10 +10,14 @@ class SebOpenEdxConfig(AppConfig):
     """App configuration"""
     name = 'seb_openedx'
     verbose_name = "eduNEXT Openedx Extensions"
-
     plugin_app = {
         'url_config': {
             'lms.djangoapp': {
+                'namespace': 'seb-openedx',
+                'regex': r'^seb-openedx/',
+                'relative_path': 'urls',
+            },
+            'cms.djangoapp': {
                 'namespace': 'seb-openedx',
                 'regex': r'^seb-openedx/',
                 'relative_path': 'urls',
