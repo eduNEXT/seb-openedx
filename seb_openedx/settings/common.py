@@ -18,4 +18,4 @@ def plugin_settings(settings):
     Defines seb_openedx settings when app is used as a plugin to edx-platform.
     See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
-    settings.IS_CMS = settings.__name__.startswith('cms')
+    pass

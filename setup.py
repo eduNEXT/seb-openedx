@@ -42,8 +42,5 @@ setup(
         "lms.djangoapp": [
             "seb_openedx = seb_openedx.apps:SebOpenEdxConfig",  # retain
         ],
-        "cms.djangoapp": [
-            "seb_openedx = seb_openedx.apps:SebOpenEdxConfig",  # retain
-        ],
     }
 )
