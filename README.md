@@ -22,12 +22,12 @@ On studio Settings.FEATURES['ENABLE_OTHER_COURSE_SETTINGS'] must be enabled, the
 
 When using edx/devstack clone the repo to the `src` folder then run the following commands from the lms container:
 ```bash
-sudo su edxapp -s /bin/bash
-source ../venvs/edxapp/bin/activate
-cd /edx/src/seb-open-edx/
-pip install -e .
 # set 'ENABLE_OTHER_COURSE_SETTINGS': True
 sed -i "s/'ENABLE_OTHER_COURSE_SETTINGS': False,/'ENABLE_OTHER_COURSE_SETTINGS': True,/g" /edx/app/edxapp/edx-platform/cms/envs/common.py
 # Adding middleware if not added already
 grep -q -F "MIDDLEWARE_CLASSES.append('seb_openedx.middleware.SecureExamBrowserMiddleware')" /edx/app/edxapp/edx-platform/lms/envs/common.py || printf "\nMIDDLEWARE_CLASSES.append('seb_openedx.middleware.SecureExamBrowserMiddleware')" >> /edx/app/edxapp/edx-platform/lms/envs/common.py
+sudo su edxapp -s /bin/bash
+source ../venvs/edxapp/bin/activate
+cd /edx/src/seb-open-edx/
+pip install -e .
 ```
