@@ -8,7 +8,6 @@ from os.path import dirname, realpath
 from subprocess import check_output, CalledProcessError
 
 from django.http import HttpResponse
-from django.conf import settings
 from django.http import HttpResponseForbidden
 
 import seb_openedx
@@ -26,9 +25,7 @@ def info_view(request):
         except CalledProcessError:
             git_data = ''
 
-        middlewares = settings.MIDDLEWARE_CLASSES if hasattr(settings, 'MIDDLEWARE_CLASSES') else settings.MIDDLEWARE
-        is_middleware_installed = 'seb_openedx.middleware.SecureExamBrowserMiddleware' in middlewares
-
+        is_middleware_installed = seb_openedx.middleware.SecureExamBrowserMiddleware.is_installed()
         response_data = {
             "version": seb_openedx.__version__,
             "name": "seb_openedx",
