@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 
 import seb_openedx
+from seb_openedx import middleware
 
 
 def info_view(request):
@@ -24,8 +25,7 @@ def info_view(request):
             git_data = unicode(check_output(["git", "rev-parse", "HEAD"], cwd=working_dir))
         except CalledProcessError:
             git_data = ''
-
-        is_middleware_installed = seb_openedx.middleware.SecureExamBrowserMiddleware.is_installed()
+        is_middleware_installed = middleware.SecureExamBrowserMiddleware.is_installed()
         response_data = {
             "version": seb_openedx.__version__,
             "name": "seb_openedx",
