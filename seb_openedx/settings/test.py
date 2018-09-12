@@ -12,6 +12,7 @@ class SettingsClass(object):
     pass
 
 
+DEBUG = True
 SETTINGS = SettingsClass()
 plugin_settings(SETTINGS)
 vars().update(SETTINGS.__dict__)
