@@ -7,6 +7,7 @@ from django.conf import settings
 from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
 from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeys
 from seb_openedx.edxapp_wrapper.get_course_module import get_course_module
+from seb_openedx.models import ForbiddenCourseAccess
 
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
@@ -17,14 +18,20 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
     # pylint: disable=inconsistent-return-statements
     def process_view(self, request, view_func, view_args, view_kwargs):
         """ Start point of to d4etermine cms or lms """
+        warning_seb_only = "Access Forbidden: This course can only be accessed with Safe Exam Browser."
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
-        if course_key:
+        if course_key and request.user.is_authenticated():
+            user_forbidden = len(ForbiddenCourseAccess.objects.filter(username=request.user.username, course_id=course_key))
+            if user_forbidden:
+                return HttpResponseForbidden(warning_seb_only + " Additionally you have been blocked, contact your teacher or system administrator for unblocking.")
             course_module = get_course_module(course_key, depth=0)
             for permission in self.allow:
                 if permission().check(request, course_module):
                     return
-            return HttpResponseForbidden("Access Forbidden: This course can only be accessed with Safe Exam Browser")
+            forbidden_access = ForbiddenCourseAccess(username=request.user.username, course_id=course_key)
+            forbidden_access.save()
+            return HttpResponseForbidden(warning_seb_only)
 
     @classmethod
     def is_installed(cls):

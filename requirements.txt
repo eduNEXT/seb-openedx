@@ -16,5 +16,5 @@ factory-boy==2.10.0
 djangorestframework-jwt==1.11.0
 Sphinx==1.7.8
 sphinx-autobuild==0.7.1
--e git://github.com/edx/opaque-keys.git@f3942654aa9e341c3d1d4b459ee705a2c5a2dc73#egg=edx_opaque_keys
+-e git://github.com/edx/opaque-keys.git@8e0697778a13b8214ef1862e3d91eccc04af1663#egg=edx_opaque_keys
 ddt==1.2.0

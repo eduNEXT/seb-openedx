@@ -10,6 +10,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'seb_openedx',
 )
 
 MIDDLEWARE = [
