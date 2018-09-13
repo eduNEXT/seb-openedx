@@ -4,7 +4,7 @@ import sys
 from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponseForbidden
 from django.conf import settings
-from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
+from opaque_keys.edx.keys import CourseKey
 from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeys
 from seb_openedx.edxapp_wrapper.get_course_module import get_course_module
 

@@ -9,6 +9,7 @@ from subprocess import check_output, CalledProcessError
 
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
+from django.utils import six
 
 import seb_openedx
 from seb_openedx import middleware
@@ -22,7 +23,7 @@ def info_view(request):
     if request.user.is_authenticated() and request.user.is_staff:
         try:
             working_dir = dirname(realpath(__file__))
-            git_data = unicode(check_output(["git", "rev-parse", "HEAD"], cwd=working_dir))
+            git_data = six.text_type(check_output(["git", "rev-parse", "HEAD"], cwd=working_dir))
         except CalledProcessError:
             git_data = ''
         is_middleware_installed = middleware.SecureExamBrowserMiddleware.is_installed()
