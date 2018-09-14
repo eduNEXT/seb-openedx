@@ -21,24 +21,20 @@ class TestMiddleware(TestCase):
         self.superuser = get_user_model().objects.create_superuser('test', 'test@example.com', 'test')
         self.course_params = {"course_key_string": "library-v1:TestX+lib1"}
 
-    @mock.patch('seb_openedx.edxapp_wrapper.get_course_module.import_module')
-    def test_middleware_forbidden(self, m_import):
+    def test_middleware_forbidden(self):
         """ Test that middleware returns forbidden when there is no class handling allowed requests """
         SecureExamBrowserMiddleware.allow = []
         request = self.factory.get(self.url_pattern)
         response = self.seb_middleware.process_view(request, self.view, [], self.course_params)
         self.assertEqual(response.status_code, 403)
-        m_import.assert_called_with(settings.EOX_CORE_COURSE_MODULE)
 
-    @mock.patch('seb_openedx.edxapp_wrapper.get_course_module.import_module')
-    def test_middleware_is_staff(self, m_import):
+    def test_middleware_is_staff(self):
         """ Test that middleware returns None if user is admin (is_staff) """
         SecureExamBrowserMiddleware.allow = [AlwaysAllowStaff]
         request = self.factory.get(self.url_pattern)
         request.user = self.superuser
         response = self.seb_middleware.process_view(request, self.view, [], self.course_params)
         self.assertEqual(response, None)
-        m_import.assert_called_with(settings.EOX_CORE_COURSE_MODULE)
 
     @mock.patch('seb_openedx.edxapp_wrapper.get_course_module.import_module', side_effect=lambda x: FakeModuleForSebkeysTesting())
     def test_middleware_sebkeys(self, m_import):

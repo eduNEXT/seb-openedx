@@ -6,7 +6,6 @@ from django.http import HttpResponseForbidden
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeys
-from seb_openedx.edxapp_wrapper.get_course_module import get_course_module
 
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
@@ -20,9 +19,8 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
         if course_key:
-            course_module = get_course_module(course_key, depth=0)
             for permission in self.allow:
-                if permission().check(request, course_module):
+                if permission().check(request, course_key):
                     return
             return HttpResponseForbidden("Access Forbidden: This course can only be accessed with Safe Exam Browser")
 
