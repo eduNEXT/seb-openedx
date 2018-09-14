@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """ Tests for public user creation API. """
+import hashlib
 import mock
 from django.test import RequestFactory, TestCase
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from seb_openedx.middleware import SecureExamBrowserMiddleware
-from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeys
+from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeysRequestHash
 
 
 class TestMiddleware(TestCase):
@@ -39,9 +40,10 @@ class TestMiddleware(TestCase):
     @mock.patch('seb_openedx.edxapp_wrapper.get_course_module.import_module', side_effect=lambda x: FakeModuleForSebkeysTesting())
     def test_middleware_sebkeys(self, m_import):
         """ Test that middleware returns None when valid seb key is given """
-        SecureExamBrowserMiddleware.allow = [CheckSEBKeys]
+        SecureExamBrowserMiddleware.allow = [CheckSEBKeysRequestHash]
         request = self.factory.get(self.url_pattern)
-        request.META['HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH'] = FakeModuleForSebkeysTesting.other_course_settings['seb_keys'][0]
+        tohash = request.build_absolute_uri().encode() + FakeModuleForSebkeysTesting.other_course_settings['seb_keys'][0].encode()
+        request.META['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'] = hashlib.sha256(tohash).hexdigest()
         response = self.seb_middleware.process_view(request, self.view, [], {"course_key_string": "library-v1:TestX+lib1"})
         self.assertEqual(response, None)
         m_import.assert_called_with(settings.EOX_CORE_COURSE_MODULE)
