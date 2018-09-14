@@ -2,6 +2,7 @@
 SEB KEYS FETCHING
 Available functions that can be used to fetch Secure Exam Browser keys
 """
+from django.utils import six
 from django.conf import settings
 from seb_openedx.edxapp_wrapper.get_course_module import get_course_module
 
@@ -27,7 +28,7 @@ def from_global_settings(course_key):
     }
     """
     if hasattr(settings, 'SEB_KEYS'):
-        return settings.SEB_KEYS.get(course_key, None)
+        return settings.SEB_KEYS.get(six.text_type(course_key), None)
     return None
 
 

@@ -1,5 +1,6 @@
 """ Permissions as classes """
 import abc
+import hashlib
 from django.utils import six
 from seb_openedx.seb_keys_sources import ORDERED_SEB_KEYS_SOURCES
 
@@ -22,15 +23,30 @@ class AlwaysAllowStaff(Permission):
         return False
 
 
-class CheckSEBKeys(Permission):
+class CheckSEBKeysRequestHash(Permission):
     """ Check for SEB keys, allow if there are none configured """
     def check(self, request, course_key):
         """ check """
-        header = 'HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH'
 
+        header = 'HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'
         for source_function in ORDERED_SEB_KEYS_SOURCES:
             seb_keys = source_function(course_key)
             if seb_keys:
-                return bool(request.META.get(header, None) in seb_keys)
+                header_value = request.META.get(header, None)
+                for key in seb_keys:
+                    tohash = request.build_absolute_uri().encode() + key.encode()
+                    if hashlib.sha256(tohash).hexdigest() == header_value:
+                        return True
+                # No valid hashed key found, abort
+                return False
         # Courses without seb are allowed by default
         return True
+
+
+class CheckSEBKeysConfigKeyHash(Permission):
+    """ Check for SEB keys, allow if there are none configured """
+    def check(self, request, course_key):
+        """ check """
+        # header = 'HTTP_X_SAFEEXAMBROWSER_CONFIGKEY HASH'
+        # TODO: Pending implementation!
+        return False

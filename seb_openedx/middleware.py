@@ -5,13 +5,13 @@ from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponseForbidden
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
-from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeys
+from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeysRequestHash
 
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
     """ Middleware for seb_openedx """
 
-    allow = [AlwaysAllowStaff, CheckSEBKeys]
+    allow = [AlwaysAllowStaff, CheckSEBKeysRequestHash]
 
     # pylint: disable=inconsistent-return-statements
     def process_view(self, request, view_func, view_args, view_kwargs):
