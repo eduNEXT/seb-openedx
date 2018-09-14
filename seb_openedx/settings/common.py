@@ -28,11 +28,8 @@ def plugin_settings(settings):
     Defines seb_openedx settings when app is used as a plugin to edx-platform.
     See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
-    settings.EOX_CORE_COURSE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'
-    settings.SEB_KEYS = getattr(settings, "SEB_KEYS", {})
+    settings.EOX_CORE_COURSE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'    
     
-    if not settings.SEB_KEYS:
-        try:
-            settings.SEB_KEYS = settings.ENV_TOKENS.get('SEB_KEYS', {})
-        except AttributeError:
-            pass
+    if not hasattr(settings, 'SEB_KEYS'):
+        settings.SEB_KEYS = getattr(settings, 'ENV_TOKENS', {}).get('SEB_KEYS', {})
+        
