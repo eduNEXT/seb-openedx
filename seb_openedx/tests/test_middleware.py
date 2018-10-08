@@ -46,7 +46,7 @@ class TestMiddleware(TestCase):
         request.META['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'] = hashlib.sha256(tohash).hexdigest()
         response = self.seb_middleware.process_view(request, self.view, [], {"course_key_string": "library-v1:TestX+lib1"})
         self.assertEqual(response, None)
-        m_import.assert_called_with(settings.EOX_CORE_COURSE_MODULE)
+        m_import.assert_called_with(settings.SEB_COURSE_MODULE)
 
 
 class FakeModuleForSebkeysTesting(object):
