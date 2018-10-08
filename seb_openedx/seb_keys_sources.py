@@ -5,6 +5,7 @@ Available functions that can be used to fetch Secure Exam Browser keys
 from django.utils import six
 from django.conf import settings
 from seb_openedx.edxapp_wrapper.get_course_module import get_course_module
+from seb_openedx.edxapp_wrapper.get_configuration_helpers import get_configuration_helpers
 
 
 def from_other_course_settings(course_key):
@@ -32,5 +33,16 @@ def from_global_settings(course_key):
     return None
 
 
+def from_site_configuration(course_key):
+    """
+    Get SEB keys from djangoapps.site_configuration
+    """
+    configuration_helpers = get_configuration_helpers()
+    if configuration_helpers.has_override_value('SEB_KEYS'):
+        keys_dict = configuration_helpers.get_configuration_value('SEB_KEYS')
+        return keys_dict.get(six.text_type(course_key), None)
+    return None
+
+
 # First one has precedence over second, second over third and so forth.
-ORDERED_SEB_KEYS_SOURCES = [from_global_settings, from_other_course_settings]
+ORDERED_SEB_KEYS_SOURCES = [from_global_settings, from_other_course_settings, from_site_configuration]

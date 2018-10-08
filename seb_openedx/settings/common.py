@@ -29,3 +29,4 @@ def plugin_settings(settings):
     See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
     settings.EOX_CORE_COURSE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'
+    settings.SEB_CONFIGURATION_HELPERS = 'seb_openedx.edxapp_wrapper.backends.get_configuration_helpers_h_v1'
