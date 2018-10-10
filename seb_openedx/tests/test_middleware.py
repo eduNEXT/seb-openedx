@@ -26,8 +26,9 @@ class TestMiddleware(TestCase):
         """ Test that middleware returns forbidden when there is no class handling allowed requests """
         SecureExamBrowserMiddleware.allow = []
         request = self.factory.get(self.url_pattern)
-        response = self.seb_middleware.process_view(request, self.view, [], self.course_params)
-        self.assertEqual(response.status_code, 403)
+        with mock.patch.object(self.seb_middleware, "render_to_response") as render_to_response:
+            self.seb_middleware.process_view(request, self.view, [], self.course_params)
+            render_to_response.assert_called_once_with('seb-403.html', status=403)
 
     def test_middleware_is_staff(self):
         """ Test that middleware returns None if user is admin (is_staff) """
