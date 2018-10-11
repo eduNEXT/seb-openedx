@@ -4,14 +4,12 @@ import sys
 from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
-from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeysRequestHash
 from seb_openedx.edxapp_wrapper.edxmako_module import render_to_response
+from seb_openedx.permissions import get_enabled_permission_classes
 
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
     """ Middleware for seb_openedx """
-
-    allow = [AlwaysAllowStaff, CheckSEBKeysRequestHash]
 
     # pylint: disable=inconsistent-return-statements
     def process_view(self, request, view_func, view_args, view_kwargs):
@@ -19,7 +17,8 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
         if course_key:
-            for permission in self.allow:
+            active_comps = get_enabled_permission_classes()
+            for permission in active_comps:
                 if permission().check(request, course_key):
                     return
             return render_to_response('seb-403.html', status=403)
