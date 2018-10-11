@@ -2,10 +2,10 @@
 
 import sys
 from django.utils.deprecation import MiddlewareMixin
-from django.http import HttpResponseForbidden
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeysRequestHash
+from seb_openedx.edxapp_wrapper.edxmako_module import render_to_response
 
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
@@ -22,7 +22,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             for permission in self.allow:
                 if permission().check(request, course_key):
                     return
-            return HttpResponseForbidden("Access Forbidden: This course can only be accessed with Safe Exam Browser")
+            return render_to_response('seb-403.html', status=403)
 
     @classmethod
     def is_installed(cls):
