@@ -1,12 +1,11 @@
 """ Middleware for seb_openedx """
 
 import sys
-import os
 from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from seb_openedx.permissions import AlwaysAllowStaff, CheckSEBKeysRequestHash
-from seb_openedx.edxapp_wrapper.get_edxmako_module import get_edxmako_module
+from seb_openedx.edxapp_wrapper.edxmako_module import render_to_response
 
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
@@ -23,7 +22,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             for permission in self.allow:
                 if permission().check(request, course_key):
                     return
-            return self.render_to_response('seb-403.html', status=403)
+            return render_to_response('seb-403.html', status=403)
 
     @classmethod
     def is_installed(cls):
@@ -31,10 +30,3 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         middleware_class_path = sys.modules[cls.__module__].__name__ + '.' + cls.__name__
         middlewares = settings.MIDDLEWARE_CLASSES if hasattr(settings, 'MIDDLEWARE_CLASSES') else settings.MIDDLEWARE
         return middleware_class_path in middlewares
-
-    def render_to_response(self, template_name, dictionary=None, namespace='main', request=None, **kwargs):
-        """ Custom render_to_response implementation using configurable backend and adding template dir """
-        edxmako = get_edxmako_module()
-        if os.path.dirname(os.path.abspath(__file__)) + '/templates' not in edxmako.LOOKUP['main'].directories:
-            edxmako.paths.add_lookup('main', 'templates', 'seb_openedx')
-        return edxmako.shortcuts.render_to_response(template_name, dictionary, namespace, request, **kwargs)

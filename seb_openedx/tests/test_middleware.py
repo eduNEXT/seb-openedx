@@ -22,13 +22,13 @@ class TestMiddleware(TestCase):
         self.superuser = get_user_model().objects.create_superuser('test', 'test@example.com', 'test')
         self.course_params = {"course_key_string": "library-v1:TestX+lib1"}
 
-    def test_middleware_forbidden(self):
+    @mock.patch('seb_openedx.middleware.render_to_response')
+    def test_middleware_forbidden(self, m_render_to_response):
         """ Test that middleware returns forbidden when there is no class handling allowed requests """
         SecureExamBrowserMiddleware.allow = []
         request = self.factory.get(self.url_pattern)
-        with mock.patch.object(self.seb_middleware, "render_to_response") as render_to_response:
-            self.seb_middleware.process_view(request, self.view, [], self.course_params)
-            render_to_response.assert_called_once_with('seb-403.html', status=403)
+        self.seb_middleware.process_view(request, self.view, [], self.course_params)
+        m_render_to_response.assert_called_once_with('seb-403.html', status=403)
 
     def test_middleware_is_staff(self):
         """ Test that middleware returns None if user is admin (is_staff) """
