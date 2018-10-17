@@ -2,7 +2,8 @@
 import abc
 import hashlib
 from django.utils import six
-from seb_openedx.seb_keys_sources import ORDERED_SEB_KEYS_SOURCES
+from django.conf import settings
+from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -27,9 +28,9 @@ class CheckSEBKeysRequestHash(Permission):
     """ Check for SEB keys, allow if there are none configured """
     def check(self, request, course_key):
         """ check """
-
+        ordered_seb_keys_sources = get_ordered_seb_keys_sources()
         header = 'HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'
-        for source_function in ORDERED_SEB_KEYS_SOURCES:
+        for source_function in ordered_seb_keys_sources:
             seb_keys = source_function(course_key)
             if seb_keys:
                 header_value = request.META.get(header, None)
@@ -50,3 +51,10 @@ class CheckSEBKeysConfigKeyHash(Permission):
         # header = 'HTTP_X_SAFEEXAMBROWSER_CONFIGKEY HASH'
         # TODO: Pending implementation!
         return False
+
+
+def get_enabled_permission_classes():
+    """ retrieve ordered permissions from settings if available, otherwise use defaults """
+    if hasattr(settings, 'SEB_PERMISSION_COMPONENTS'):
+        return [globals()[comp] for comp in settings.SEB_PERMISSION_COMPONENTS]
+    return [AlwaysAllowStaff, CheckSEBKeysRequestHash]

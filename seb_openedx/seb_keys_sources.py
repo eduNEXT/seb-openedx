@@ -44,5 +44,9 @@ def from_site_configuration(course_key):
     return None
 
 
-# First one has precedence over second, second over third and so forth.
-ORDERED_SEB_KEYS_SOURCES = [from_global_settings, from_other_course_settings, from_site_configuration]
+def get_ordered_seb_keys_sources():
+    """ get key sources as specified on settings, or the default ones """
+    # First one has precedence over second, second over third and so forth.
+    if hasattr(settings, 'SEB_KEY_SOURCES'):
+        return [globals()[source] for source in settings.SEB_KEY_SOURCES]
+    return [from_global_settings, from_other_course_settings, from_site_configuration]
