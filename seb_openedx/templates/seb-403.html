@@ -1,21 +1,54 @@
 ## mako
-
+<%namespace name='static' file='static_content.html'/>
 <%page expression_filter="h"/>
 <%!
 from django.utils.translation import ugettext as _
 from openedx.core.djangolib.markup import HTML, Text
+from openedx.features.course_experience import course_home_page_title, COURSE_OUTLINE_PAGE_FLAG
 %>
 <%inherit file="main.html" />
+<%include file="/courseware/course_navigation.html" />
 
-<%block name="pagetitle">${_("Page Not Found")}</%block>
+<%block name="pagetitle">${_("Access not allowed")}</%block>
+
+<%block name="headextra">
+<%static:css group='style-course-vendor'/>
+<%static:css group='style-course'/>
+</%block>
+% if is_courseware_index:
+<header class="page-header has-secondary">
+    <div class="page-header-main">
+        <nav aria-label="${_('Course')}" class="sr-is-focusable" tabindex="-1">
+            <div class="has-breadcrumbs">
+                <div class="breadcrumbs">
+                    % if COURSE_OUTLINE_PAGE_FLAG.is_enabled(course.id):
+                        <span class="nav-item nav-item-course">
+                            <a href="${course_url}">${course_home_page_title(course)}</a>
+                        </span>
+                        <span class="icon fa fa-angle-right" aria-hidden="true"></span>
+                    % endif
+                    % if chapter:
+                        <span class="nav-item nav-item-chapter" data-course-position="${course.position}" data-chapter-position="${chapter.position}">
+                            <a href="${course_url}#${unicode(chapter.location)}">${chapter.display_name_with_default}</a>
+                        </span>
+                        <span class="icon fa fa-angle-right" aria-hidden="true"></span>
+                    % endif
+                    % if section:
+                        <span class="nav-item nav-item-section">
+                            <a href="${course_url}#${unicode(section.location)}">${section.display_name_with_default}</a>
+                        </span>
+                        <span class="icon fa fa-angle-right" aria-hidden="true"></span>
+                    % endif
+                    <span class="nav-item nav-item-sequence">${sequence_title}</span>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+% endif
 
 <main id="main" aria-label="Content" tabindex="-1">
     <section class="outside-app">
-        <h1><%block name="pageheader">${_("Error: Access not allowed")}</%block></h1>
-        <p style="text-align: center;">
-            <%block name="pagecontent">
-                ${Text(_(' This course can only be accessed with "Safe Exam Browser"'))}
-            </%block>
-        </p>
+		<%include file="seb-403-error-message.html" />
     </section>
 </main>

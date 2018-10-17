@@ -16,6 +16,7 @@ DEBUG = True
 SETTINGS = SettingsClass()
 plugin_settings(SETTINGS)
 vars().update(SETTINGS.__dict__)
+SEB_COURSEWARE_MODULE = 'seb_openedx.tests.test_utils'
 
 
 ROOT_URLCONF = 'seb_openedx.urls'
