@@ -13,20 +13,12 @@ workflows:
 jobs:
   test-3.6:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.6.5
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
 
     working_directory: ~/repo
 
     steps:
       - checkout
-
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -46,17 +38,11 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
       - run:
           name: run tests
           command: |
             . venv/bin/activate
-            coverage run --source="." -m pytest
-            coverage report --fail-under=39
+            make test
 
       - store_artifacts:
           path: test-reports
@@ -64,18 +50,17 @@ jobs:
   # Based on answer https://discuss.circleci.com/t/run-tests-on-multiple-versions-of-python/15462
   test-2.7:
     docker:
-      - image: circleci/python:2.7
+      - image: edxops/edxapp:hawthorn.master
     working_directory: ~/repo27
 
     steps:
       - checkout
-
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-27-dependencies-{{ checksum "requirements.txt" }}
+          - python27-dependencies-{{ checksum "requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-27-dependencies-
+          - python27-dependencies-
 
       - run:
           name: install dependencies
@@ -83,24 +68,30 @@ jobs:
             mkdir -p ./venv
             virtualenv ./venv
             . venv/bin/activate
+            mv /root/.pip/pip.conf ~/pip.conf
             pip install -r requirements.txt
-
+            mv ~/pip.conf /root/.pip/pip.conf
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
-
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
+          key: python27-dependencies-{{ checksum "requirements.txt" }}
       - run:
-          name: run tests
+          name: run unit tests
           command: |
             . venv/bin/activate
-            coverage run --source="." --rcfile=.coveragerc -m pytest
-            coverage report --fail-under=39 --rcfile=.coveragerc 
+            make test
+
+      - run:
+          name: install on hawthorn
+          command: |
+            source /edx/app/edxapp/venvs/edxapp/bin/activate
+            pip install -e .
+
+      - run:
+          name: run tests hawthorn
+          command: |
+            source /edx/app/edxapp/venvs/edxapp/bin/activate
+            make test
 
       - store_artifacts:
           path: test-reports

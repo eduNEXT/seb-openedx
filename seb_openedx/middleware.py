@@ -11,7 +11,6 @@ from seb_openedx.permissions import get_enabled_permission_classes
 class SecureExamBrowserMiddleware(MiddlewareMixin):
     """ Middleware for seb_openedx """
 
-    # pylint: disable=inconsistent-return-statements
     def process_view(self, request, view_func, view_args, view_kwargs):
         """ Start point of to d4etermine cms or lms """
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
@@ -20,8 +19,9 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             active_comps = get_enabled_permission_classes()
             for permission in active_comps:
                 if permission().check(request, course_key):
-                    return
+                    return None
             return render_to_response('seb-403.html', status=403)
+        return None
 
     @classmethod
     def is_installed(cls):
