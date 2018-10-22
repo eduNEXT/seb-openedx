@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth import get_user_model
 
 from django.test import TestCase
+from seb_openedx.tests.test_utils import is_testing_hawthorn
 import seb_openedx
 
 
@@ -16,5 +17,6 @@ class TestInfoView(TestCase):
         """ Check that test version is present """
         login_success = self.client.login(username='test', password='test')
         self.assertTrue(login_success)
-        response = self.client.get('/seb-info')
+        url = '/seb-openedx/seb-info' if is_testing_hawthorn() else '/seb-info'
+        response = self.client.get(url)
         self.assertContains(response, seb_openedx.__version__)

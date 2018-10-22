@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 from seb_openedx.middleware import SecureExamBrowserMiddleware
+from seb_openedx.tests.test_utils import is_testing_hawthorn
 
 
 class TestMiddleware(TestCase):
@@ -38,16 +39,20 @@ class TestMiddleware(TestCase):
         response = self.seb_middleware.process_view(request, self.view, [], self.course_params)
         self.assertEqual(response, None)
 
-    @mock.patch('seb_openedx.edxapp_wrapper.get_course_module.import_module', side_effect=lambda x: FakeModuleForSebkeysTesting())
     @override_settings(SEB_PERMISSION_COMPONENTS=['CheckSEBKeysRequestHash'])
-    def test_middleware_sebkeys(self, m_import):
+    def test_middleware_sebkeys(self):
         """ Test that middleware returns None when valid seb key is given """
         request = self.factory.get(self.url_pattern)
         tohash = request.build_absolute_uri().encode() + FakeModuleForSebkeysTesting.other_course_settings['seb_keys'][0].encode()
         request.META['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'] = hashlib.sha256(tohash).hexdigest()
-        response = self.seb_middleware.process_view(request, self.view, [], {"course_key_string": "library-v1:TestX+lib1"})
+        if is_testing_hawthorn():
+            response = self.seb_middleware.process_view(request, self.view, [], {"course_key_string": "library-v1:TestX+lib1"})
+        else:
+            get_course_module = 'seb_openedx.edxapp_wrapper.get_course_module.import_module'
+            with mock.patch(get_course_module, side_effect=lambda x: FakeModuleForSebkeysTesting()) as m_import:
+                response = self.seb_middleware.process_view(request, self.view, [], {"course_key_string": "library-v1:TestX+lib1"})
+                m_import.assert_called_with(settings.SEB_COURSE_MODULE)
         self.assertEqual(response, None)
-        m_import.assert_called_with(settings.SEB_COURSE_MODULE)
 
 
 class FakeModuleForSebkeysTesting(object):

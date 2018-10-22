@@ -91,7 +91,7 @@ jobs:
           name: run tests hawthorn
           command: |
             source /edx/app/edxapp/venvs/edxapp/bin/activate
-            make test
+            make test-hawthorn
 
       - store_artifacts:
           path: test-reports
