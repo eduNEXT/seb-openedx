@@ -133,6 +133,7 @@ jobs:
          name: Installing requirements
          command: |
             cd ~/edx-platform
+            pip install --upgrade pip
             sed -i '/RecommenderXBlock/d' ~/edx-platform/requirements/edx/github.txt
             sed -i '/xblock_discussion_course/d' ~/edx-platform/requirements/edx/local.txt
             source ~/virtualenvs/venv-2.7.12/bin/activate
