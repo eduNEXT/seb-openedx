@@ -142,7 +142,7 @@ jobs:
             pip install --exists-action w -r requirements/edx/pre.txt
             pip install --exists-action w -r requirements/edx/base.txt
             pip install --exists-action w -r requirements/edx/github.txt
-            pip uninstall pyOpenSSL
+            pip uninstall -y pyOpenSSL
             pip install --exists-action w -r requirements/edx/local.txt
             pip install --exists-action w -r requirements/edx/paver.txt
             if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
