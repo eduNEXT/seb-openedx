@@ -49,50 +49,144 @@ jobs:
           destination: test-reports
   # Based on answer https://discuss.circleci.com/t/run-tests-on-multiple-versions-of-python/15462
   test-2.7:
+    working_directory: ~/edx-platform
     docker:
-      - image: edxops/edxapp:hawthorn.master
-    working_directory: ~/repo27
-
+      - image: circleci/python:2.7-jessie-node
     steps:
-      - checkout
-      # Download and cache dependencies
+      - run:
+          name: Cloning edx-platform
+          command: |
+            cd ~
+            git clone https://github.com/edx/edx-platform.git
+            cd edx-platform
+      # 'See docs on artifact collection here https://circleci.com/docs/2.0/artifacts/'
+      # CircleCI 2.0 does not support environment variables that refer to each other the same way as 1.0 did.
+      - run:
+          name: Creating directories and files
+          command: |
+           mkdir -p ~/sqlite_3.14
+           mkdir -p circleci-test-results/artifacts/junit circleci-test-results/artifacts/test_root/log
+      - run:
+         name: Installing and creating virtual environment
+         command: |
+           sudo pip install virtualenv
+           virtualenv --python=`which python` ~/virtualenvs/venv-2.7.12
+           source ~/virtualenvs/venv-2.7.12/bin/activate
+      - run:
+         name: Installing Node v6.11.1 and Node packages
+         command: |
+           curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+           sudo apt-get install -y nodejs
+           sudo npm install -g n
+           sudo n 6.11.1
+      - run:
+         name: Installing pre-reqs
+         command: |
+
+            sudo apt-get install -y software-properties-common
+            sudo apt-get install libtiff5-dev
+            cd ~/edx-platform/requirements/edx
+            rm *
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/base.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/coverage.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/custom.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/development.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/edx-private.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/github.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/local.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/openstack.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/paver.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/post.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/pre.txt
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/requirements/edx/testing.txt
+            sed -i 's/libtiff4-dev/libtiff5-dev/g' ~/edx-platform/requirements/system/ubuntu/apt-packages.txt
+            cd ~/edx-platform/scripts
+            wget https://raw.githubusercontent.com/edx-solutions/edx-platform/f2d84e0b6c34e0a98e87fed5857947a2650ff81e/scripts/install-system-req.sh
+            source ~/virtualenvs/venv-2.7.12/bin/activate
+            bash ./install-system-req.sh
+            
       - restore_cache:
-          keys:
-          - python27-dependencies-{{ checksum "requirements.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - python27-dependencies-
-
+              name: Restores cache if any of the requirements file have not changed since the previous run
+              key: >-
+                virtual-environment-cache-v1
+                -{{ checksum "requirements/edx/pre.txt" }}
+                -{{ checksum "requirements/edx/base.txt" }}
+                -{{ checksum "requirements/edx/github.txt" }}
+                -{{ checksum "requirements/edx/local.txt" }}
+                -{{ checksum "requirements/edx/paver.txt" }}
+                -{{ checksum "requirements/edx/post.txt" }}
+      - restore_cache:
+         name: Restores cache if the package.json file have not changed since the previous run
+         key: virtual-environment-cache-v1-{{ checksum "package.json" }}
+      # Mirror what paver install_prereqs does.
+      # After a successful build, CircleCI will
+      # cache the virtualenv at that state, so that
+      # the next build will not need to install them
+      # from scratch again.
+      # We need to pin djangorestframework until we have upgraded to edxval 0.0.19 or greater.
+      # Output the installed python packages to the console to help with troubleshooting any issues
+      # with python requirements.
+      # NOTE: If coveralls or django-rest-framework version is changed below, update/increment the
+      # cache version as well under 'restore_cache' and 'save_cache' commands
+      # i.e virtual-environment-cache-v{x} => virtual-environment-cache-v{x+1}
       - run:
-          name: install dependencies
+         name: Installing requirements
+         command: |
+            cd ~/edx-platform
+            sed -i '/RecommenderXBlock/d' ~/edx-platform/requirements/edx/github.txt
+            sed -i '/xblock_discussion_course/d' ~/edx-platform/requirements/edx/local.txt
+            source ~/virtualenvs/venv-2.7.12/bin/activate
+            pip install --upgrade pip
+            npm install
+            pip install google-compute-engine
+            pip install --exists-action w -r requirements/edx/pre.txt
+            pip install --exists-action w -r requirements/edx/base.txt
+            pip install --exists-action w -r requirements/edx/github.txt
+            pip install --exists-action w -r requirements/edx/local.txt
+            pip install --exists-action w -r requirements/edx/paver.txt
+            if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
+            pip install coveralls==1.0
+            pip install --upgrade --force-reinstall git+https://github.com/edx/django-rest-framework.git@3c72cb5ee5baebc4328947371195eae2077197b0#egg=djangorestframework==3.2.3
+            pip freeze
+      # Note: If sqlite version is changed below, update/increment the cache version as well under
+      # 'restore_cache' and 'save_cache' commands i.e virtual-environment-cache-v{x} => virtual-environment-cache-v{x+1}
+      - run:
+          name: Installing custom sqlite 3.14
           command: |
-            mkdir -p ./venv
-            virtualenv ./venv
-            . venv/bin/activate
-            mv /root/.pip/pip.conf ~/pip.conf
-            pip install -r requirements.txt
-            mv ~/pip.conf /root/.pip/pip.conf
+            source ~/virtualenvs/venv-2.7.12/bin/activate
+            cd ~/sqlite_3.14
+            wget https://github.com/ghaering/pysqlite/archive/2.8.3.tar.gz
+            wget https://www.sqlite.org/2016/sqlite-autoconf-3140100.tar.gz
+            tar -xzvf sqlite-autoconf-3140100.tar.gz
+            tar -xzvf 2.8.3.tar.gz
+            cp -av sqlite-autoconf-3140100/. pysqlite-2.8.3/
+            cd ./pysqlite-2.8.3 && python setup.py build_static install
+            rm -rf 2.8.3.tar.gz sqlite-autoconf-3140100.tar.gz pysqlite-2.8.3 sqlite-autoconf-3140100
       - save_cache:
+          key: >-
+            virtual-environment-cache-v1
+            -{{ checksum "requirements/edx/pre.txt" }}
+            -{{ checksum "requirements/edx/base.txt" }}
+            -{{ checksum "requirements/edx/github.txt" }}
+            -{{ checksum "requirements/edx/local.txt" }}
+            -{{ checksum "requirements/edx/paver.txt" }}
+            -{{ checksum "requirements/edx/post.txt" }}
           paths:
-            - ./venv
-          key: python27-dependencies-{{ checksum "requirements.txt" }}
+            - ~/virtualenvs/venv-2.7.12
+      - save_cache:
+          key: virtual-environment-cache-v1-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+       # Run tests for the system.
+      # all-tests.sh is the entry point for determining
+      # which tests to run.
+      # See the circleCI documentation regarding parallelism
+      # to understand how multiple containers can be used to
+      # run subsets of tests in parallel.
+      # if a command runs 900 seconds without output, kill it
+      - checkout
       - run:
-          name: run unit tests
+          name: Execute hawthorn tests
           command: |
-            . venv/bin/activate
-            make test
-
-      - run:
-          name: install on hawthorn
-          command: |
-            source /edx/app/edxapp/venvs/edxapp/bin/activate
-            pip install -e .
-
-      - run:
-          name: run tests hawthorn
-          command: |
-            source /edx/app/edxapp/venvs/edxapp/bin/activate
+            source ~/virtualenvs/venv-2.7.12/bin/activate
             make test-hawthorn
-
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
