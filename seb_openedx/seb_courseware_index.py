@@ -13,7 +13,7 @@ class SebCoursewareIndex(COURSEWARE.views.index.CoursewareIndex):
         cls.fragment = new_fragment
 
     def _create_courseware_context(self, *args, **kwargs):
-        """ ovrriding method (but still calling the overwritten one) """
+        """ Overriding method (but still calling the overwritten one) """
         result = super(SebCoursewareIndex, self)._create_courseware_context(*args, **kwargs)
         if self.__class__.fragment:
             result['fragment'] = self.__class__.fragment
