@@ -137,10 +137,10 @@ jobs:
             sed -i '/RecommenderXBlock/d' ~/edx-platform/requirements/edx/github.txt
             sed -i '/xblock_discussion_course/d' ~/edx-platform/requirements/edx/local.txt
             source ~/virtualenvs/venv-2.7.12/bin/activate
-            pip install --upgrade pip
             npm install
             pip install google-compute-engine
             pip install --exists-action w -r requirements/edx/pre.txt
+            pip install --upgrade pip
             pip install --exists-action w -r requirements/edx/base.txt
             pip install --exists-action w -r requirements/edx/github.txt
             pip uninstall -y pyOpenSSL
