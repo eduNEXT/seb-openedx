@@ -30,7 +30,7 @@ def plugin_settings(settings):
     """
     settings.SEB_COURSE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'
     settings.SEB_COURSEWARE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_courseware_module_h_v1'
-    settings.SEB_XMODULE_MODULESTORE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_courseware_module_h_v1'
+    settings.SEB_GET_CHAPTER_FROM_LOCATION = 'seb_openedx.edxapp_wrapper.backends.get_chapter_from_location_h_v1'
     settings.SEB_CONFIGURATION_HELPERS = 'seb_openedx.edxapp_wrapper.backends.get_configuration_helpers_h_v1'
     settings.SEB_EDXMAKO_MODULE = 'seb_openedx.edxapp_wrapper.backends.edxmako_module_h_v1'
     settings.SEB_PERMISSION_COMPONENTS = ['AlwaysAllowStaff', 'CheckSEBKeysRequestHash']
@@ -39,7 +39,3 @@ def plugin_settings(settings):
     # When SEB determines the access is denied one may specify what to whitelist/blacklist more granularly
     settings.SEB_WHITELIST_PATHS = []
     settings.SEB_BLACKLIST_CHAPTERS = []
-
-    # Example allowing all tabs but denying access to a specific "chapter":
-    # settings.SEB_WHITELIST_PATHS = ['wiki', 'course-outline', 'courseware', 'progress', 'discussion']
-    # settings.SEB_BLACKLIST_CHAPTERS = ['d8a6192ade314473a78242dfeedfbf5b']

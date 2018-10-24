@@ -4,16 +4,15 @@ import sys
 import inspect
 from django.http import HttpResponseNotFound
 from django.utils.deprecation import MiddlewareMixin
+from django.utils.six.moves import filter as sixfilter  # pylint: disable=import-error
 from django.conf import settings
-from opaque_keys.edx.keys import CourseKey, UsageKey
+from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 from seb_openedx.edxapp_wrapper.edxmako_module import render_to_response, render_to_string
 from seb_openedx.edxapp_wrapper.get_courseware_module import get_courseware_module
 from seb_openedx.permissions import get_enabled_permission_classes
 from seb_openedx.seb_courseware_index import SebCoursewareIndex
-from seb_openedx.edxapp_wrapper.get_xmodule_modulestore_module import get_xmodule_modulestore_module
-from seb_openedx.utils import unquote_slashes
-
+from seb_openedx.edxapp_wrapper.get_chapter_from_location import get_chapter_from_location
 
 SEB_WHITELIST_PATHS = getattr(settings, 'SEB_WHITELIST_PATHS', [])
 SEB_BLACKLIST_CHAPTERS = getattr(settings, 'SEB_BLACKLIST_CHAPTERS', [])
@@ -55,29 +54,32 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
 
     def is_whitelisted_view(self, request, course_key):
         """ First broad filter: whitelisting of paths/tabs """
+
+        # Whitelisting logic by alias
+        aliases = {
+            'discussion.views': 'discussion',
+            'course_wiki.views': 'wiki',
+            'openedx.features.course_experience': 'course-outline',
+        }
+
         views_module = inspect.getmodule(request.resolver_match.func).__name__
 
-        if 'discussion' in SEB_WHITELIST_PATHS and views_module == 'discussion.views':
+        alias_current_path = next(sixfilter(lambda k: aliases[k] if views_module.startswith(k) else None, aliases), None)
+
+        if alias_current_path in SEB_WHITELIST_PATHS:
             return True
 
-        if 'wiki' in SEB_WHITELIST_PATHS and views_module == 'course_wiki.views':
-            return True
-
+        # Whitelisting xblocks when courseware
         if 'courseware' in SEB_WHITELIST_PATHS and self.is_xblock_request(request):
             return True
 
-        url_names_allowed = list(SEB_WHITELIST_PATHS)
-
-        if 'course-outline' in SEB_WHITELIST_PATHS:
-            url_names_allowed.append('openedx.course_experience')
-
+        # Whitelisting by url name
         if request.resolver_match.url_name:
-            if request.resolver_match.url_name in ['jump_to', 'jump_to_id']:
-                # Allow redirects:
-                return True
+            url_names_allowed = list(SEB_WHITELIST_PATHS) + ['jump_to', 'jump_to_id']
             for url_name in url_names_allowed:
                 if request.resolver_match.url_name.startswith(url_name):
                     return True
+
         return False
 
     def is_blacklisted_chapter(self, request, course_key):
@@ -91,13 +93,9 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             return True
 
         if 'courseware' in SEB_WHITELIST_PATHS and self.is_xblock_request(request):
-            modulestore = get_xmodule_modulestore_module().django.modulestore
-            path_to_location = get_xmodule_modulestore_module().search.path_to_location
             usage_id = request.resolver_match.kwargs.get('usage_id')
-            usage_key = UsageKey.from_string(unquote_slashes(usage_id)).map_into_course(course_key)
-            if usage_key:
-                path = path_to_location(modulestore(), usage_key)
-                chapter = path[1]
+            if usage_id:
+                chapter = get_chapter_from_location(usage_id, course_key)
                 if chapter in SEB_BLACKLIST_CHAPTERS:
                     return True
         return False
