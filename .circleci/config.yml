@@ -134,6 +134,9 @@ jobs:
          command: |
             cd ~/edx-platform
             pip install --upgrade pip
+            find ~/edx-platform/requirements/edx -name "*.txt" -exec sed -i '/--allow-external/d' {} \;
+            find ~/edx-platform/requirements/edx -name "*.txt" -exec sed -i '/--allow-unverified/d' {} \;
+            sed -i '/--allow-external/d' ~/edx-platform/requirements/edx/github.txt
             sed -i '/RecommenderXBlock/d' ~/edx-platform/requirements/edx/github.txt
             sed -i '/xblock_discussion_course/d' ~/edx-platform/requirements/edx/local.txt
             source ~/virtualenvs/venv-2.7.12/bin/activate
