@@ -134,19 +134,18 @@ jobs:
          command: |
             cd ~/edx-platform
             pip install --upgrade pip
-            find ~/edx-platform/requirements/edx -name "*.txt" -exec sed -i '/--allow-external/d' {} \;
-            find ~/edx-platform/requirements/edx -name "*.txt" -exec sed -i '/--allow-unverified/d' {} \;
-            sed -i '/--allow-external/d' ~/edx-platform/requirements/edx/github.txt
             sed -i '/RecommenderXBlock/d' ~/edx-platform/requirements/edx/github.txt
             sed -i '/xblock_discussion_course/d' ~/edx-platform/requirements/edx/local.txt
             source ~/virtualenvs/venv-2.7.12/bin/activate
             npm install
             pip install google-compute-engine
-            pip install --exists-action w -r requirements/edx/pre.txt
-            pip install --upgrade pip
+            pip install --exists-action w -r requirements/edx/pre.txt\
             pip install --exists-action w -r requirements/edx/base.txt
             pip install --exists-action w -r requirements/edx/github.txt
             pip uninstall -y pyOpenSSL
+            find ~/edx-platform/requirements/edx -name "*.txt" -exec sed -i '/--allow-external/d' {} \;
+            find ~/edx-platform/requirements/edx -name "*.txt" -exec sed -i '/--allow-unverified/d' {} \;
+            pip install --upgrade pip
             pip install --exists-action w -r requirements/edx/local.txt
             pip install --exists-action w -r requirements/edx/paver.txt
             if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
