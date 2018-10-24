@@ -139,7 +139,7 @@ jobs:
             source ~/virtualenvs/venv-2.7.12/bin/activate
             npm install
             pip install google-compute-engine
-            pip install --exists-action w -r requirements/edx/pre.txt\
+            pip install --exists-action w -r requirements/edx/pre.txt
             pip install --exists-action w -r requirements/edx/base.txt
             pip install --exists-action w -r requirements/edx/github.txt
             pip uninstall -y pyOpenSSL
