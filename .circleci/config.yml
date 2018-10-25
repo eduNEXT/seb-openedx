@@ -49,7 +49,7 @@ jobs:
           destination: test-reports
   # Based on answer https://discuss.circleci.com/t/run-tests-on-multiple-versions-of-python/15462
   test-2.7:
-    working_directory: ~/edx-platform
+    working_directory: ~/seb-open-edx
     docker:
       - image: circleci/python:2.7-jessie-node
     steps:
@@ -64,6 +64,7 @@ jobs:
       - run:
           name: Creating directories and files
           command: |
+           cd ~/edx-platform
            mkdir -p ~/sqlite_3.14
            mkdir -p circleci-test-results/artifacts/junit circleci-test-results/artifacts/test_root/log
       - run:
@@ -82,7 +83,7 @@ jobs:
       - run:
          name: Installing pre-reqs
          command: |
-
+    
             sudo apt-get install -y software-properties-common
             sudo apt-get install libtiff5-dev
             cd ~/edx-platform/requirements/edx
@@ -109,12 +110,12 @@ jobs:
               name: Restores cache if any of the requirements file have not changed since the previous run
               key: >-
                 virtual-environment-cache-v1
-                -{{ checksum "requirements/edx/pre.txt" }}
-                -{{ checksum "requirements/edx/base.txt" }}
-                -{{ checksum "requirements/edx/github.txt" }}
-                -{{ checksum "requirements/edx/local.txt" }}
-                -{{ checksum "requirements/edx/paver.txt" }}
-                -{{ checksum "requirements/edx/post.txt" }}
+                -{{ checksum "~/edx-platform/requirements/edx/pre.txt" }}
+                -{{ checksum "~/edx-platform/requirements/edx/base.txt" }}
+                -{{ checksum "~/edx-platform/requirements/edx/github.txt" }}
+                -{{ checksum "~/edx-platform/requirements/edx/local.txt" }}
+                -{{ checksum "~/edx-platform/requirements/edx/paver.txt" }}
+                -{{ checksum "~/edx-platform/requirements/edx/post.txt" }}
       - restore_cache:
          name: Restores cache if the package.json file have not changed since the previous run
          key: virtual-environment-cache-v1-{{ checksum "package.json" }}
@@ -169,12 +170,12 @@ jobs:
       - save_cache:
           key: >-
             virtual-environment-cache-v1
-            -{{ checksum "requirements/edx/pre.txt" }}
-            -{{ checksum "requirements/edx/base.txt" }}
-            -{{ checksum "requirements/edx/github.txt" }}
-            -{{ checksum "requirements/edx/local.txt" }}
-            -{{ checksum "requirements/edx/paver.txt" }}
-            -{{ checksum "requirements/edx/post.txt" }}
+            -{{ checksum "~/edx-platform/requirements/edx/pre.txt" }}
+            -{{ checksum "~/edx-platform/requirements/edx/base.txt" }}
+            -{{ checksum "~/edx-platform/requirements/edx/github.txt" }}
+            -{{ checksum "~/edx-platform/requirements/edx/local.txt" }}
+            -{{ checksum "~/edx-platform/requirements/edx/paver.txt" }}
+            -{{ checksum "~/edx-platform/requirements/edx/post.txt" }}
           paths:
             - ~/virtualenvs/venv-2.7.12
       - save_cache:
