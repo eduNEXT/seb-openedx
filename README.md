@@ -11,11 +11,20 @@
 
 ## Configuration
 
+##### SEB Keys
 On studio Settings.FEATURES['ENABLE_OTHER_COURSE_SETTINGS'] must be enabled, then on advanced settings "other_course_settings" must contain a key called seb_keys with all the seb_keys this course allows, as in:
 ```json
 {
     "seb_keys": ["EXAMPLEHASHPROVIDEDBYSEB"]
 }
+```
+
+##### Whitelisting/Blacklisting
+You can specify which tabs/parts of the course are always allowed; and if you need to be more specific you can blacklist specific chapters as well.
+Example allowing all tabs but denying access to a specific "chapter":
+```python
+settings.SEB_WHITELIST_PATHS = ['wiki', 'course-outline', 'courseware', 'progress', 'discussion']
+settings.SEB_BLACKLIST_CHAPTERS = ['d8a6192ade314473a78242dfeedfbf5b']
 ```
 
 ## Development

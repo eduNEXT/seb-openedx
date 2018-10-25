@@ -1,0 +1,11 @@
+<%!
+from django.utils.translation import ugettext as _
+from openedx.core.djangolib.markup import Text
+
+%>
+<h1><%block name="pageheader">${_("Error: Access not allowed")}</%block></h1>
+<p style="text-align: center;">
+    <%block name="pagecontent">
+        ${Text(_(' This course can only be accessed with "Safe Exam Browser"'))}
+    </%block>
+</p>
