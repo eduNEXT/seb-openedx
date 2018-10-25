@@ -24,7 +24,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         """ Start point of to d4etermine cms or lms """
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
-        access_denied = False
+
 
         if course_key:
             # By default is all denied
@@ -37,6 +37,11 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             if self.is_blacklisted_chapter(request, course_key):
                 # Second: Granular white-listing
                 access_denied = True
+
+            user_name = request.user.username if hasattr(request, 'user') else None
+            if hasattr(course_masquerade, 'user_name'):
+                user_name = course_masquerade.user_name
+                masquerade = True
 
             active_comps = get_enabled_permission_classes()
             for permission in active_comps:
