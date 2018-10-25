@@ -31,8 +31,9 @@ test: clean
 	coverage report --fail-under=39 --rcfile=.coveragerc
 
 test-hawthorn: clean
-	# Assumes testing inside devstack
-	ln -sfn /edx/var/edxapp/staticfiles /edx/app/edxapp/edx-platform/test_root/staticfiles
-	cd /edx/app/edxapp/edx-platform
-	pytest /edx/src/seb-open-edx/seb_openedx --ds seb_openedx.settings.test_hawthorn
+        if [ "$EDX_PLATFORM_SETTINGS" = "devstack_docker" ]; then
+	    ln -sfn /edx/var/edxapp/staticfiles /edx/app/edxapp/edx-platform/test_root/staticfiles
+	fi
+	cd /edx/src/seb-open-edx || cd ~/seb-open-edx
+	pytest seb_openedx --ds seb_openedx.settings.test_hawthorn
 	coverage report --fail-under=39 --rcfile=.coveragerc
