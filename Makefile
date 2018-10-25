@@ -31,7 +31,7 @@ test: clean
 	coverage report --fail-under=39 --rcfile=.coveragerc
 
 test-hawthorn: clean
-        if [ "$EDX_PLATFORM_SETTINGS" = "devstack_docker" ]; then
+	if [ "$EDX_PLATFORM_SETTINGS" = "devstack_docker" ]; then
 	    ln -sfn /edx/var/edxapp/staticfiles /edx/app/edxapp/edx-platform/test_root/staticfiles
 	fi
 	cd /edx/src/seb-open-edx || cd ~/seb-open-edx
