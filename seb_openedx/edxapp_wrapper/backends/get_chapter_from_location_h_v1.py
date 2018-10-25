@@ -10,7 +10,6 @@ def get_chapter_from_location(usage_id, course_key):
     usage_key = UsageKey.from_string(unquote_slashes(usage_id)).map_into_course(course_key)
     if usage_key:
         path = path_to_location(modulestore(), usage_key)
-        chapter_index = 1
-        chapter = path[chapter_index]
+        chapter = path[1]  # 1 is the position where path_to_location returns the chapter
         return chapter
     return None

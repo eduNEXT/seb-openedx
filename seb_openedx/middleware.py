@@ -4,7 +4,6 @@ import sys
 import inspect
 from django.http import HttpResponseNotFound
 from django.utils.deprecation import MiddlewareMixin
-from django.utils.six.moves import filter as sixfilter  # pylint: disable=import-error
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
@@ -23,7 +22,6 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         """ Start point of to d4etermine cms or lms """
-        courseware = get_courseware_module()
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
         access_denied = False
@@ -46,11 +44,18 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
                     access_denied = False
 
         if access_denied:
-            is_courseware_view = bool(view_func.__name__ == courseware.views.index.CoursewareIndex.__name__)
-            if is_courseware_view:
-                return self.courseware_error_response(request, *view_args, **view_kwargs)
-            return self.generic_error_response(request, course_key)
+            return self.handle_access_denied(request, view_func, view_args, view_kwargs, course_key)
+
         return None
+
+    # pylint: disable=too-many-arguments
+    def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key):
+        """ handle what to return and do when access denied """
+        courseware = get_courseware_module()
+        is_courseware_view = bool(view_func.__name__ == courseware.views.index.CoursewareIndex.__name__)
+        if is_courseware_view:
+            return self.courseware_error_response(request, *view_args, **view_kwargs)
+        return self.generic_error_response(request, course_key)
 
     def is_whitelisted_view(self, request, course_key):
         """ First broad filter: whitelisting of paths/tabs """
@@ -63,8 +68,8 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         }
 
         views_module = inspect.getmodule(request.resolver_match.func).__name__
-
-        alias_current_path = next(sixfilter(lambda k: aliases[k] if views_module.startswith(k) else None, aliases), None)
+        paths_matched = [aliases[key] for key in aliases if views_module.startswith(key)]
+        alias_current_path = paths_matched[0] if paths_matched else None
 
         if alias_current_path in SEB_WHITELIST_PATHS:
             return True
