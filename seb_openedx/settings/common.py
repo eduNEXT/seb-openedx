@@ -10,6 +10,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'seb_openedx',
 )
 
 MIDDLEWARE = [
@@ -39,3 +40,5 @@ def plugin_settings(settings):
     # When SEB determines the access is denied one may specify what to whitelist/blacklist more granularly
     settings.SEB_WHITELIST_PATHS = []
     settings.SEB_BLACKLIST_CHAPTERS = []
+    settings.SEB_USER_BANNING_BACKEND = 'DatabaseBannedUsersBackend'  # can also be 'UserprofileBannedUsersBackend' (not yet implemented)
+    settings.SEB_USER_BANNING_ENABLED = True
