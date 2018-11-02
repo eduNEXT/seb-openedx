@@ -36,13 +36,13 @@ class TestMiddleware(TestCase):
         request.user = mock.MagicMock()
         return request
 
-    @mock.patch('seb_openedx.middleware.render_to_string')
+    @mock.patch('seb_openedx.middleware.render_to_response')
     @override_settings(SEB_PERMISSION_COMPONENTS=[])
     def test_middleware_forbidden(self, m_render_to_string):
         """ Test that middleware returns forbidden when there is no class handling allowed requests """
         request = self.create_fake_request()
         self.seb_middleware.process_view(request, self.view, [], self.course_params)
-        m_render_to_string.assert_called_once_with('seb-403.html', mock.ANY)
+        m_render_to_string.assert_called_once_with('seb-403.html', mock.ANY, status=403)
 
     @override_settings(SEB_PERMISSION_COMPONENTS=['AlwaysAllowStaff'])
     def test_middleware_is_staff(self):

@@ -3,14 +3,12 @@
 from __future__ import absolute_import, unicode_literals, print_function
 import sys
 import inspect
-from django.http import HttpResponseNotFound, HttpResponseForbidden
+from django.http import HttpResponseNotFound
 from django.utils.deprecation import MiddlewareMixin
-from django.utils import six
-from django.utils.encoding import force_text
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
-from seb_openedx.edxapp_wrapper.edxmako_module import render_to_string
+from seb_openedx.edxapp_wrapper.edxmako_module import render_to_string, render_to_response
 from seb_openedx.edxapp_wrapper.get_courseware_module import get_courseware_module
 from seb_openedx.seb_courseware_index import SebCoursewareIndex
 from seb_openedx.edxapp_wrapper.get_chapter_from_location import get_chapter_from_location
@@ -35,6 +33,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
 
+        # When the request is for masquerade (ajax) we leave it alone
         if self.get_view_path(request) == 'courseware.masquerade':
             return None
 
@@ -63,9 +62,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
                         access_denied = False
 
             if access_denied:
-                html = six.text_type(self.handle_access_denied(request, view_func, view_args, view_kwargs, course_key, context, user_name))
-                http_response = HttpResponseForbidden(html)
-                return http_response
+                return self.handle_access_denied(request, view_func, view_args, view_kwargs, course_key, context, user_name)
 
         return None
 
@@ -154,8 +151,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         html = Fragment()
         html.add_content(render_to_string('seb-403-error-message.html', context))
         SebCoursewareIndex.set_context_fragment(html)
-        view_http_response = SebCoursewareIndex.as_view()(request, *view_args, **view_kwargs)
-        return force_text(view_http_response.content)
+        return SebCoursewareIndex.as_view()(request, *view_args, **view_kwargs)
 
     def generic_error_response(self, request, course_key, context):
         """ generic error response, full page 403 error (with course menu) """
@@ -170,7 +166,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             'request': request
         })
 
-        return render_to_string('seb-403.html', context)
+        return render_to_response('seb-403.html', context, status=403)
 
     def is_xblock_request(self, request):
         """ returns if it's an xblock HTTP request or not """
