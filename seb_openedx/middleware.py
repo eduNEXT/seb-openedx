@@ -1,5 +1,6 @@
 """ Middleware for seb_openedx """
 
+from __future__ import absolute_import, unicode_literals, print_function
 import sys
 import inspect
 from django.http import HttpResponseNotFound
@@ -7,12 +8,12 @@ from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
-from seb_openedx.edxapp_wrapper.edxmako_module import render_to_response, render_to_string
+from seb_openedx.edxapp_wrapper.edxmako_module import render_to_string, render_to_response
 from seb_openedx.edxapp_wrapper.get_courseware_module import get_courseware_module
-from seb_openedx.permissions import get_enabled_permission_classes
 from seb_openedx.seb_courseware_index import SebCoursewareIndex
 from seb_openedx.edxapp_wrapper.get_chapter_from_location import get_chapter_from_location
 from seb_openedx.user_banning import is_user_banned, ban_user
+from seb_openedx.permissions import get_enabled_permission_classes
 
 SEB_WHITELIST_PATHS = getattr(settings, 'SEB_WHITELIST_PATHS', [])
 SEB_BLACKLIST_CHAPTERS = getattr(settings, 'SEB_BLACKLIST_CHAPTERS', [])
@@ -28,9 +29,13 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         self.banned = False
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        """ Start point of to d4etermine cms or lms """
+        """ Start point """
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
+
+        # When the request is for masquerade (ajax) we leave it alone
+        if self.get_view_path(request) == 'courseware.masquerade':
+            return None
 
         if course_key:
             # By default is all denied
@@ -44,34 +49,54 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
                 # Second: Granular white-listing
                 access_denied = True
 
-            self.banned = False
             user_name = request.user.username if hasattr(request, 'user') else None
-
-            active_comps = get_enabled_permission_classes()
-            for permission in active_comps:
-                if permission().check(request, course_key):
-                    access_denied = False
+            masquerade, context = self.handle_masquerade(request, course_key)
 
             if BANNING_ENABLED and user_name and is_user_banned(user_name, course_key):
                 self.banned = True
-                access_denied = True
+
+            if not self.banned:
+                active_comps = get_enabled_permission_classes()
+                for permission in active_comps:
+                    if permission().check(request, course_key, masquerade):
+                        access_denied = False
 
             if access_denied:
-                return self.handle_access_denied(request, view_func, view_args, view_kwargs, course_key, user_name)
+                return self.handle_access_denied(request, view_func, view_args, view_kwargs, course_key, context, user_name)
 
         return None
 
+    def supports_preview_menu(self, request):
+        """ check if current view support preview_menu or not """
+        return bool(request.resolver_match.func.__name__ == get_courseware_module().views.index.CoursewareIndex.__name__)\
+            or inspect.getmodule(request.resolver_match.func).__name__.startswith('openedx.features.course_experience')
+
     # pylint: disable=too-many-arguments
-    def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, user_name):
+    def handle_masquerade(self, request, course_key):
+        """ masquerade """
+        courseware = get_courseware_module()
+        masquerade = request.session.get('masquerade_settings', {}).get(course_key)
+        if masquerade:
+            context = {
+                'course': courseware.courses.get_course(course_key),
+                'supports_preview_menu': self.supports_preview_menu(request),
+                'staff_access': request.user.is_staff,
+                'masquerade': masquerade,
+            }
+            return masquerade, context
+        return None, {}
+
+    # pylint: disable=too-many-arguments
+    def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, context, user_name):
         """ handle what to return and do when access denied """
         if BANNING_ENABLED and user_name and not self.banned:
             ban_user(user_name, course_key, '')
         courseware = get_courseware_module()
         is_courseware_view = bool(view_func.__name__ == courseware.views.index.CoursewareIndex.__name__)
-        context = {"banned": self.banned}
+        context.update({"banned": self.banned})
         if is_courseware_view:
-            return self.courseware_error_response(context, request, *view_args, **view_kwargs)
-        return self.generic_error_response(context, request, course_key)
+            return self.courseware_error_response(request, context, *view_args, **view_kwargs)
+        return self.generic_error_response(request, course_key, context)
 
     def is_whitelisted_view(self, request, course_key):
         """ First broad filter: whitelisting of paths/tabs """
@@ -121,14 +146,14 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
                     return True
         return False
 
-    def courseware_error_response(self, context, request, *view_args, **view_kwargs):
+    def courseware_error_response(self, request, context, *view_args, **view_kwargs):
         """ error response when a chapter is being blocked """
         html = Fragment()
         html.add_content(render_to_string('seb-403-error-message.html', context))
         SebCoursewareIndex.set_context_fragment(html)
         return SebCoursewareIndex.as_view()(request, *view_args, **view_kwargs)
 
-    def generic_error_response(self, context, request, course_key):
+    def generic_error_response(self, request, course_key, context):
         """ generic error response, full page 403 error (with course menu) """
         courseware = get_courseware_module()
         try:
@@ -146,6 +171,10 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
     def is_xblock_request(self, request):
         """ returns if it's an xblock HTTP request or not """
         return request.resolver_match.func.__name__ == 'handle_xblock_callback'
+
+    def get_view_path(self, request):
+        """ get full import path of match resolver """
+        return inspect.getmodule(request.resolver_match.func).__name__
 
     @classmethod
     def is_installed(cls):

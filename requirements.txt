@@ -19,3 +19,4 @@ sphinx-autobuild==0.7.1
 -e git://github.com/edx/opaque-keys.git@8e0697778a13b8214ef1862e3d91eccc04af1663#egg=edx_opaque_keys
 ddt==1.2.0
 web-fragments==0.2.2
+
