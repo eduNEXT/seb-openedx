@@ -3,11 +3,10 @@
 
 from __future__ import unicode_literals
 
-import json
 from os.path import dirname, realpath
 from subprocess import check_output, CalledProcessError
 
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.http import HttpResponseForbidden
 from django.utils import six
 
@@ -33,8 +32,5 @@ def info_view(request):
             "git": git_data.rstrip('\r\n'),
             "middleware_installed": is_middleware_installed
         }
-        return HttpResponse(
-            json.dumps(response_data),
-            content_type="application/json"
-        )
+        return JsonResponse(response_data)
     return HttpResponseForbidden()

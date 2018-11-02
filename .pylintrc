@@ -4,4 +4,5 @@ disable=
 	no-self-use,
 	too-few-public-methods,
 	fixme,
-	line-too-long
+	line-too-long,
+	no-member

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+      a {
+        color: cadetblue;
+      }
+      .btn-info {
+        background-color: cadetblue;
+        border-color: cadetblue;
+      }
+    </style>
+    <title>Django People</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-10">
+          <br>
+          <h1 class="mt-2">SEB - User Admin</h1>
+          <br>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <thead class="thead-default" >
+                <tr>
+                  <th class="orderable">
+                    <a href="?sort=username">User</a>
+                  </th>
+                  <th class="orderable">
+                    <a href="?sort=course_id">Course id</a>
+                  </th>
+                  <th class="orderable">
+                    <a href="?sort=access_blocked">Blocked</a>
+                  </th>
+                  <th class="orderable">
+                    <a href="?sort=last_modified_time">Last modified</a>
+                  </th>
+                  <th class="orderable">
+                    <a href="?sort=last_modified_by_username">By</a>
+                  </th>
+                  <th class="orderable">
+                    <a href="?sort=my_column">Actions</a>
+                  </th>
+                </tr>
+                </thead>
+              </thead>
+              <tbody>
+              {% for item in all_instances %}
+              <tr>
+                <td>{{item.username}}</td>
+                <td>{{item.course_id}}</td>
+                <td>{{item.access_blocked}}</td>
+                <td>{{item.last_modified_time}}</td>
+                <td>{{item.last_modified_by_username}}</td>
+                <td>
+                  <form action="" method="POST">
+                  {% csrf_token %}
+                  {% if item.access_blocked %}
+                    <input class="btn btn-info" type="submit" value="Unblock"/>
+                    <input type="hidden" name="action" value="unban">
+                  {% else %}
+                    <input class="btn btn-info" type="submit" value="Block"/>
+                    <input type="hidden" name="action" value="ban">
+                  {% endif %}
+                  <input type="hidden" name="username" value="{{ item.username }}">
+                  <input type="hidden" name="course_id" value="{{ item.course_id }}">
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
