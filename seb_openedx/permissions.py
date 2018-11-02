@@ -10,15 +10,17 @@ from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources
 class Permission(object):
     """ Abstract class Permision """
     @abc.abstractmethod
-    def check(self, request, course_key):
+    def check(self, request, course_key, masquerade=None):
         """ Abstract method check """
         pass
 
 
 class AlwaysAllowStaff(Permission):
     """ Always allow when user.is_staff """
-    def check(self, request, course_key):
+    def check(self, request, course_key, masquerade=None):
         """ check """
+        if masquerade and masquerade.role != 'staff':
+            return False
         if hasattr(request, 'user') and request.user.is_authenticated() and request.user.is_staff:
             return True
         return False
@@ -26,7 +28,7 @@ class AlwaysAllowStaff(Permission):
 
 class CheckSEBKeysRequestHash(Permission):
     """ Check for SEB keys, allow if there are none configured """
-    def check(self, request, course_key):
+    def check(self, request, course_key, masquerade=None):
         """ check """
         ordered_seb_keys_sources = get_ordered_seb_keys_sources()
         header = 'HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'
@@ -46,7 +48,7 @@ class CheckSEBKeysRequestHash(Permission):
 
 class CheckSEBKeysConfigKeyHash(Permission):
     """ Check for SEB keys, allow if there are none configured """
-    def check(self, request, course_key):
+    def check(self, request, course_key, masquerade=None):
         """ check """
         # header = 'HTTP_X_SAFEEXAMBROWSER_CONFIGKEY HASH'
         # TODO: Pending implementation!

@@ -12,6 +12,7 @@ from seb_openedx.middleware import SecureExamBrowserMiddleware
 
 @patch.object(SecureExamBrowserMiddleware, 'is_whitelisted_view', Mock(return_value=False))
 @patch.object(SecureExamBrowserMiddleware, 'is_blacklisted_chapter', Mock(return_value=True))
+@patch.object(SecureExamBrowserMiddleware, 'handle_masquerade', Mock(return_value=(None, {})))
 @override_settings(SEB_KEY_SOURCES=['from_other_course_settings'])
 class TestMiddleware(TestCase):
     """ Tests for the seb-open-edx page """
@@ -26,18 +27,25 @@ class TestMiddleware(TestCase):
         self.superuser = get_user_model().objects.create_superuser('test', 'test@example.com', 'test')
         self.course_params = {"course_key_string": "library-v1:TestX+lib1"}
 
-    @mock.patch('seb_openedx.middleware.render_to_response')
-    @override_settings(SEB_PERMISSION_COMPONENTS=[])
-    def test_middleware_forbidden(self, m_render_to_response):
-        """ Test that middleware returns forbidden when there is no class handling allowed requests """
+    def create_fake_request(self):
+        """ helper method to create a test request """
         request = self.factory.get(self.url_pattern)
+        request.resolver_match = mock.MagicMock()
+        request.user = mock.MagicMock()
+        return request
+
+    @mock.patch('seb_openedx.middleware.render_to_string')
+    @override_settings(SEB_PERMISSION_COMPONENTS=[])
+    def test_middleware_forbidden(self, m_render_to_string):
+        """ Test that middleware returns forbidden when there is no class handling allowed requests """
+        request = self.create_fake_request()
         self.seb_middleware.process_view(request, self.view, [], self.course_params)
-        m_render_to_response.assert_called_once_with('seb-403.html', mock.ANY, status=403)
+        m_render_to_string.assert_called_once_with('seb-403.html', mock.ANY)
 
     @override_settings(SEB_PERMISSION_COMPONENTS=['AlwaysAllowStaff'])
     def test_middleware_is_staff(self):
         """ Test that middleware returns None if user is admin (is_staff) """
-        request = self.factory.get(self.url_pattern)
+        request = self.create_fake_request()
         request.user = self.superuser
         response = self.seb_middleware.process_view(request, self.view, [], self.course_params)
         self.assertEqual(response, None)
@@ -46,7 +54,7 @@ class TestMiddleware(TestCase):
     @override_settings(SEB_PERMISSION_COMPONENTS=['CheckSEBKeysRequestHash'])
     def test_middleware_sebkeys(self, m_import):
         """ Test that middleware returns None when valid seb key is given """
-        request = self.factory.get(self.url_pattern)
+        request = self.create_fake_request()
         tohash = request.build_absolute_uri().encode() + FakeModuleForSebkeysTesting.other_course_settings['seb_keys'][0].encode()
         request.META['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'] = hashlib.sha256(tohash).hexdigest()
         response = self.seb_middleware.process_view(request, self.view, [], {"course_key_string": "library-v1:TestX+lib1"})

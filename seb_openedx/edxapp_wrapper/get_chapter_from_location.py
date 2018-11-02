@@ -9,4 +9,4 @@ def get_chapter_from_location(*args, **kwargs):
     backend_function = settings.SEB_GET_CHAPTER_FROM_LOCATION
     backend = import_module(backend_function)
 
-    return backend.get_courseware_module(*args, **kwargs)
+    return backend.get_chapter_from_location(*args, **kwargs)
