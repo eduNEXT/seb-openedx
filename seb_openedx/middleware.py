@@ -6,7 +6,6 @@ import inspect
 from django.http import HttpResponseNotFound
 from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
-from django.utils.six import text_type
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 from seb_openedx.edxapp_wrapper.edxmako_module import render_to_string, render_to_response
@@ -16,6 +15,7 @@ from seb_openedx.lazy_import_seb_courseware_index import LazyImportSebCourseware
 from seb_openedx.edxapp_wrapper.get_chapter_from_location import get_chapter_from_location
 from seb_openedx.user_banning import is_user_banned, ban_user
 from seb_openedx.permissions import get_enabled_permission_classes
+from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources
 
 
 SEB_KEYS = getattr(settings, 'SEB_KEYS', {})
@@ -41,17 +41,16 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         if course_key:
             # By default is all denied
             access_denied = True
-            config = SEB_KEYS.get(text_type(course_key), {})
 
-            if isinstance(config, dict):
-                # Only dict configuration has whitelisting/blacklisting
-                if self.is_whitelisted_view(config, request, course_key):
-                    # First: Broad white-listing
-                    access_denied = False
+            config = self.get_config(course_key)
 
-                if self.is_blacklisted_chapter(config, request, course_key):
-                    # Second: Granular black-listing
-                    access_denied = True
+            if self.is_whitelisted_view(config, request, course_key):
+                # First: Broad white-listing
+                access_denied = False
+
+            if self.is_blacklisted_chapter(config, request, course_key):
+                # Second: Granular black-listing
+                access_denied = True
 
             user_name, masquerade, context = self.handle_masquerade(request, course_key)
 
@@ -178,6 +177,14 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         })
 
         return render_to_response('seb-403.html', context, status=403)
+
+    def get_config(self, course_key):
+        """ get seb congif for course """
+        for source_function in get_ordered_seb_keys_sources():
+            _config = source_function(course_key)
+            if isinstance(_config, dict):
+                return _config
+        return {}
 
     def is_xblock_request(self, request):
         """ returns if it's an xblock HTTP request or not """
