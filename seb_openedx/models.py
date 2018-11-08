@@ -15,6 +15,7 @@ class ForbiddenCourseAccess(models.Model):
     class Meta(object):
         """ Meta """
         unique_together = ('username', 'course_id')
+        app_label = 'seb_openedx'
         indexes = [
             models.Index(fields=['username', 'course_id'])
         ]

@@ -12,10 +12,10 @@ from seb_openedx.middleware import SecureExamBrowserMiddleware
 
 @patch.object(SecureExamBrowserMiddleware, 'is_whitelisted_view', Mock(return_value=False))
 @patch.object(SecureExamBrowserMiddleware, 'is_blacklisted_chapter', Mock(return_value=True))
-@patch.object(SecureExamBrowserMiddleware, 'handle_masquerade', Mock(return_value=(None, {})))
+@patch.object(SecureExamBrowserMiddleware, 'handle_masquerade', Mock(return_value=(None, None, {})))
 @patch('seb_openedx.middleware.is_user_banned', Mock(return_value=False))
 @patch('seb_openedx.middleware.ban_user', Mock())
-@override_settings(SEB_KEY_SOURCES=['from_other_course_settings'])
+@override_settings(SEB_KEY_SOURCES=['from_other_course_settings'], SERVICE_VARIANT='lms')
 class TestMiddleware(TestCase):
     """ Tests for the seb-open-edx page """
     def setUp(self):
