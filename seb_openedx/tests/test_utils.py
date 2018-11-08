@@ -1,6 +1,6 @@
 """ Testing utils """
 # pylint: disable=attribute-defined-outside-init, invalid-name
-from mock import MagicMock, Mock
+from mock import MagicMock
 
 
 def get_courseware_module():
@@ -11,5 +11,12 @@ def get_courseware_module():
         return None
     fake_courseware_module = MagicMock()
     fake_courseware_module.courses.get_course = get_course
-    fake_courseware_module.views.index.CoursewareIndex = Mock
     return fake_courseware_module
+
+
+def get_courseware_index_view():
+    """ helper for settings.test fake backend """
+    class Dummy(object):
+        """ Dummy class """
+        pass
+    return Dummy

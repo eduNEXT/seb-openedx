@@ -1,9 +1,9 @@
 """ SebCoursewareIndex """
-from seb_openedx.edxapp_wrapper.get_courseware_module import get_courseware_module
-COURSEWARE = get_courseware_module()
+from seb_openedx.edxapp_wrapper.get_courseware_index_view import get_courseware_index_view
+CoursewareIndex = get_courseware_index_view()  # pylint: disable=invalid-name
 
 
-class SebCoursewareIndex(COURSEWARE.views.index.CoursewareIndex):
+class SebCoursewareIndex(CoursewareIndex):
     """ Class to extend Open edX class CoursewareIndex and change _create_courseware_context """
     fragment = None
 

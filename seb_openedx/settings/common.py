@@ -31,6 +31,7 @@ def plugin_settings(settings):
     """
     settings.SEB_COURSE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'
     settings.SEB_COURSEWARE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_courseware_module_h_v1'
+    settings.SEB_COURSEWARE_INDEX_VIEW = 'seb_openedx.edxapp_wrapper.backends.get_courseware_index_view_h_v1'
     settings.SEB_GET_CHAPTER_FROM_LOCATION = 'seb_openedx.edxapp_wrapper.backends.get_chapter_from_location_h_v1'
     settings.SEB_CONFIGURATION_HELPERS = 'seb_openedx.edxapp_wrapper.backends.get_configuration_helpers_h_v1'
     settings.SEB_EDXMAKO_MODULE = 'seb_openedx.edxapp_wrapper.backends.edxmako_module_h_v1'
