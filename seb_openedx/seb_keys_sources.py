@@ -16,7 +16,7 @@ def from_other_course_settings(course_key):
     course_module = get_course_module(course_key, depth=0)
     if hasattr(course_module, 'other_course_settings'):
         other_settings = course_module.other_course_settings
-        return other_settings.get('seb_keys', None)
+        return other_settings.get('SEB_KEYS', None)
     return None
 
 

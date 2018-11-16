@@ -34,6 +34,8 @@ class CheckSEBKeysRequestHash(Permission):
         header = 'HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'
         for source_function in ordered_seb_keys_sources:
             seb_keys = source_function(course_key)
+            if isinstance(seb_keys, dict) and 'BROWSER_KEYS' in seb_keys:
+                seb_keys = seb_keys['BROWSER_KEYS']
             if seb_keys:
                 header_value = request.META.get(header, None)
                 for key in seb_keys:

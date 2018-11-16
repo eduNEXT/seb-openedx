@@ -15,9 +15,10 @@ from seb_openedx.lazy_import_seb_courseware_index import LazyImportSebCourseware
 from seb_openedx.edxapp_wrapper.get_chapter_from_location import get_chapter_from_location
 from seb_openedx.user_banning import is_user_banned, ban_user
 from seb_openedx.permissions import get_enabled_permission_classes
+from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources
 
-SEB_WHITELIST_PATHS = getattr(settings, 'SEB_WHITELIST_PATHS', [])
-SEB_BLACKLIST_CHAPTERS = getattr(settings, 'SEB_BLACKLIST_CHAPTERS', [])
+
+SEB_KEYS = getattr(settings, 'SEB_KEYS', {})
 BANNING_ENABLED = getattr(settings, 'SEB_USER_BANNING_ENABLED', True)
 
 
@@ -41,11 +42,13 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             # By default is all denied
             access_denied = True
 
-            if self.is_whitelisted_view(request, course_key):
+            config = self.get_config(course_key)
+
+            if self.is_whitelisted_view(config, request, course_key):
                 # First: Broad white-listing
                 access_denied = False
 
-            if self.is_blacklisted_chapter(request, course_key):
+            if self.is_blacklisted_chapter(config, request, course_key):
                 # Second: Granular black-listing
                 access_denied = True
 
@@ -99,7 +102,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             return self.courseware_error_response(request, context, *view_args, **view_kwargs)
         return self.generic_error_response(request, course_key, context)
 
-    def is_whitelisted_view(self, request, course_key):
+    def is_whitelisted_view(self, config, request, course_key):
         """ First broad filter: whitelisting of paths/tabs """
 
         # Whitelisting logic by alias
@@ -112,38 +115,43 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         views_module = inspect.getmodule(request.resolver_match.func).__name__
         paths_matched = [aliases[key] for key in aliases if views_module.startswith(key)]
         alias_current_path = paths_matched[0] if paths_matched else None
+        whitelist_paths = config.get('WHITELIST_PATHS', [])
 
-        if alias_current_path in SEB_WHITELIST_PATHS:
+        if not whitelist_paths:
+            return False
+
+        if alias_current_path in whitelist_paths:
             return True
 
         # Whitelisting xblocks when courseware
-        if 'courseware' in SEB_WHITELIST_PATHS and self.is_xblock_request(request):
+        if 'courseware' in whitelist_paths and self.is_xblock_request(request):
             return True
 
         # Whitelisting by url name
         if request.resolver_match.url_name:
-            url_names_allowed = list(SEB_WHITELIST_PATHS) + ['jump_to', 'jump_to_id']
+            url_names_allowed = list(whitelist_paths) + ['jump_to', 'jump_to_id']
             for url_name in url_names_allowed:
                 if request.resolver_match.url_name.startswith(url_name):
                     return True
 
         return False
 
-    def is_blacklisted_chapter(self, request, course_key):
+    def is_blacklisted_chapter(self, config, request, course_key):
         """ Second more granular filter: blacklisting of specific chapters """
         chapter = request.resolver_match.kwargs.get('chapter')
+        blackist_chapters = config.get('BLACKLIST_CHAPTERS', [])
 
-        if not SEB_BLACKLIST_CHAPTERS:
+        if not blackist_chapters:
             return False
 
-        if chapter in SEB_BLACKLIST_CHAPTERS:
+        if chapter in blackist_chapters:
             return True
 
-        if 'courseware' in SEB_WHITELIST_PATHS and self.is_xblock_request(request):
+        if 'courseware' in config.get('WHITELIST_PATHS', []) and self.is_xblock_request(request):
             usage_id = request.resolver_match.kwargs.get('usage_id')
             if usage_id:
                 chapter = get_chapter_from_location(usage_id, course_key)
-                if chapter in SEB_BLACKLIST_CHAPTERS:
+                if chapter in blackist_chapters:
                     return True
         return False
 
@@ -169,6 +177,14 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         })
 
         return render_to_response('seb-403.html', context, status=403)
+
+    def get_config(self, course_key):
+        """ get seb congif for course """
+        for source_function in get_ordered_seb_keys_sources():
+            _config = source_function(course_key)
+            if isinstance(_config, dict):
+                return _config
+        return {}
 
     def is_xblock_request(self, request):
         """ returns if it's an xblock HTTP request or not """

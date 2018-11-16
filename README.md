@@ -23,8 +23,14 @@ On studio Settings.FEATURES['ENABLE_OTHER_COURSE_SETTINGS'] must be enabled, the
 You can specify which tabs/parts of the course are always allowed; and if you need to be more specific you can blacklist specific chapters as well.
 Example allowing all tabs but denying access to a specific "chapter":
 ```python
-settings.SEB_WHITELIST_PATHS = ['wiki', 'course-outline', 'courseware', 'progress', 'discussion']
-settings.SEB_BLACKLIST_CHAPTERS = ['d8a6192ade314473a78242dfeedfbf5b']
+SEB_KEYS = {
+    "course-v1:edX+DemoX+Demo_Course": {
+        "BROWSER_KEYS": ["EXAMPLEHASHPROVIDEDBYSEB"],
+        "WHITELIST_PATHS": ['wiki', 'course-outline', 'courseware', 'progress', 'discussion'],
+        "BLACKLIST_CHAPTERS": ['d8a6192ade314473a78242dfeedfbf5b'],
+    },
+    "course-v1:edX+E2E-101+course": ["ANOTHEREXAMPLEHASHPROVIDEDBYSEB"]
+}
 ```
 
 ## Development
