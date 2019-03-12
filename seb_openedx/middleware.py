@@ -25,6 +25,7 @@ BANNING_ENABLED = getattr(settings, 'SEB_USER_BANNING_ENABLED', True)
 class SecureExamBrowserMiddleware(MiddlewareMixin):
     """ Middleware for seb_openedx """
 
+    # pylint: disable=too-many-locals
     def process_view(self, request, view_func, view_args, view_kwargs):
         """ Start point """
 
@@ -66,7 +67,16 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
                         access_denied = False
 
             if access_denied:
-                return self.handle_access_denied(request, view_func, view_args, view_kwargs, course_key, context, user_name, banned)
+                return self.handle_access_denied(
+                    request,
+                    view_func,
+                    view_args,
+                    view_kwargs,
+                    course_key,
+                    context,
+                    user_name,
+                    banned
+                )
 
         return None
 
