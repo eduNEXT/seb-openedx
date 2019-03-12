@@ -8,11 +8,13 @@ SEB Open edX plugin
 
 
 Table of Content
-=====
+================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+
+   installation
+   usage
 
 
 Project Background

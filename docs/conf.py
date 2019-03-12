@@ -8,25 +8,21 @@
 
 # -- Path setup --------------------------------------------------------------
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+import os
+from os.path import join, dirname, abspath
+from datetime import datetime
 
 # -- Project information -----------------------------------------------------
 
-project = u'Open edX plugin for the Safe Exam Browser'
-copyright = u'2019, eduNEXT'
+year = datetime.now().year
+project = u'SEB Open edX'
+copyright = u'%d, eduNEXT' % year
 author = u'eduNEXT'
 
 # The short X.Y version
-version = u''
+version = u'1.0'
 # The full version, including alpha/beta/rc tags
-release = u'0.1'
+release = u'1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,6 +36,7 @@ release = u'0.1'
 # ones.
 extensions = [
 ]
+releases_github_path = "eduNEXT/seb-openedx"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -47,8 +44,9 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
+
+default_role = "obj"
 
 # The master toctree document.
 master_doc = 'index'
@@ -64,6 +62,7 @@ language = None
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
 exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
+exclude_trees = ["_build"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -75,12 +74,14 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
+html_theme_options = {
+    "description": "Open edX plugin for the Safe Exam Browser",
+    "github_user": "eduNEXT",
+    "github_repo": "seb-openedx",
+    "link": "#3782BE",
+    "link_hover": "#3782BE",
+    "page_width": "1024px",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
