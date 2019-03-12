@@ -11,6 +11,7 @@ mock==2.0.0
 pytest==3.6.3
 pytest-django==3.3.3
 coverage==4.5.1
+pycodestyle==2.5.0
 pylint==1.9.3
 factory-boy==2.10.0
 djangorestframework-jwt==1.11.0
@@ -19,4 +20,3 @@ sphinx-autobuild==0.7.1
 -e git://github.com/edx/opaque-keys.git@8e0697778a13b8214ef1862e3d91eccc04af1663#egg=edx_opaque_keys
 ddt==1.2.0
 web-fragments==0.2.2
-

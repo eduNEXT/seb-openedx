@@ -57,7 +57,11 @@ class DatabaseBannedUsersBackend(BannedUsersBackend):
     """ Database backend """
     def is_user_banned(self, username, course_key):
         """ Check if row exists on the database (ForbiddenCourseAccess) """
-        return len(ForbiddenCourseAccess.objects.filter(username=username, course_id=course_key, access_blocked=True))  # pylint: disable=no-member
+        return len(ForbiddenCourseAccess.objects.filter(  # pylint: disable=no-member
+            username=username,
+            course_id=course_key,
+            access_blocked=True
+        ))
 
     def ban_user(self, username, course_key, last_modified_time, banned_by):
         """ Create or update forbidden_access, set access_blocked=True """

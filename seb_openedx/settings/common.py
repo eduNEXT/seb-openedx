@@ -41,5 +41,6 @@ def plugin_settings(settings):
     # When SEB determines the access is denied one may specify what to whitelist/blacklist more granularly
     settings.SEB_WHITELIST_PATHS = []
     settings.SEB_BLACKLIST_CHAPTERS = []
-    settings.SEB_USER_BANNING_BACKEND = 'DatabaseBannedUsersBackend'  # can also be 'UserprofileBannedUsersBackend' (not yet implemented)
+    # Options include 'DatabaseBannedUsersBackend' and 'UserprofileBannedUsersBackend' (not yet implemented)
+    settings.SEB_USER_BANNING_BACKEND = 'DatabaseBannedUsersBackend'
     settings.SEB_USER_BANNING_ENABLED = True

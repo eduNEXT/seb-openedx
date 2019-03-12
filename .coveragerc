@@ -3,3 +3,5 @@
 data_file = .coverage
 omit =
     venv/*
+    # Remove when we find a way to test the backends under CI
+    seb_openedx/edxapp_wrapper/backends/*
