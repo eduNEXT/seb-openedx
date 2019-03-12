@@ -19,9 +19,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u'SEB Open edX'
-copyright = u'2018, Edunext'
-author = u'Edunext'
+project = u'Open edX plugin for the Safe Exam Browser'
+copyright = u'2019, eduNEXT'
+author = u'eduNEXT'
 
 # The short X.Y version
 version = u''
@@ -101,7 +101,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'SEBOpenedXdoc'
+htmlhelp_basename = 'SEB-Open-edX-doc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -128,8 +128,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'SEBOpenedX.tex', u'SEB Open edX Documentation',
-     u'Edunext', 'manual'),
+    (master_doc, 'SEBOpenedX.tex', u'SEB Open edX documentation',
+     u'eduNEXT', 'manual'),
 ]
 
 
@@ -138,7 +138,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'sebopenedx', u'SEB Open edX Documentation',
+    (master_doc, 'sebopenedx', u'SEB Open edX documentation',
      [author], 1)
 ]
 
@@ -150,6 +150,6 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'SEBOpenedX', u'SEB Open edX Documentation',
-     author, 'SEBOpenedX', 'One line description of project.',
+     author, 'SEBOpenedX', 'Open edX server plugin for the Safe Exam Browser.',
      'Miscellaneous'),
 ]
