@@ -130,9 +130,11 @@ The `devstack <https://github.com/edx/devstack>`_ install based on docker is a v
 
     .. code-block:: bash
 
-        # TODO: This is not enough to prevent make down from removing the plugin
-        docker commit edx.devstack.lms
-        docker commit edx.devstack.studio
+        docker container ls | grep edx.devstack.lms
+
+        # Then you do something like
+
+        docker commit f498048ad942 edxops/edxapp
 
 
 Native Installation
