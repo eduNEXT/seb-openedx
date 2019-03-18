@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function
+
 import os
 import re
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 
 def get_version(*file_paths):
@@ -29,18 +28,20 @@ setup(
     author="eduNEXT",
     author_email="contact@edunext.co",
     url="https://github.com/eduNEXT/seb_openedx",
-    description="eduNEXT Openedx extensions",
+    description="SEB Open edX",
     long_description="",
     install_requires=[],
     scripts=[],
-    license="AGPL",
+    license="AGPL 3.0",
     platforms=["any"],
     zip_safe=False,
-    packages=['seb_openedx'],
+    packages=[
+        'seb_openedx',
+    ],
     include_package_data=True,
     entry_points={
         "lms.djangoapp": [
-            "seb_openedx = seb_openedx.apps:SebOpenEdxConfig",  # retain
+            "seb_openedx = seb_openedx.apps:SebOpenEdxConfig",
         ],
     }
 )
