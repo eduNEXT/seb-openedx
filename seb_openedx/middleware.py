@@ -3,6 +3,8 @@
 from __future__ import absolute_import, unicode_literals, print_function
 import sys
 import inspect
+import logging
+
 from django.http import HttpResponseNotFound
 from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
@@ -17,7 +19,7 @@ from seb_openedx.user_banning import is_user_banned, ban_user
 from seb_openedx.permissions import get_enabled_permission_classes
 from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources
 
-
+LOG = logging.getLogger(__name__)
 SEB_KEYS = getattr(settings, 'SEB_KEYS', {})
 BANNING_ENABLED = getattr(settings, 'SEB_USER_BANNING_ENABLED', True)
 
@@ -61,10 +63,11 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             banned = BANNING_ENABLED and user_name and is_user_banned(user_name, course_key)
 
             if not banned:
-                active_comps = get_enabled_permission_classes()
-                for permission in active_comps:
+                for permission in get_enabled_permission_classes():
                     if permission().check(request, course_key, masquerade):
                         access_denied = False
+                    else:
+                        print("Access blocked for: %s. Permission: %s", user_name, permission)
 
             if access_denied:
                 return self.handle_access_denied(
@@ -189,7 +192,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         return render_to_response('seb-403.html', context, status=403)
 
     def get_config(self, course_key):
-        """ get seb congif for course """
+        """ get seb config for course """
         for source_function in get_ordered_seb_keys_sources():
             _config = source_function(course_key)
             if isinstance(_config, dict):

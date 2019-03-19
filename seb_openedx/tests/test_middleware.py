@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Tests for public user creation API. """
+""" Tests for the main middleware class of the SEB Open edX plugin. """
 import hashlib
 import mock
 from mock import Mock, patch

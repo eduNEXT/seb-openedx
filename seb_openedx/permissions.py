@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Permissions as classes """
 import abc
 import hashlib
@@ -30,9 +31,8 @@ class CheckSEBKeysRequestHash(Permission):
     """ Check for SEB keys, allow if there are none configured """
     def check(self, request, course_key, masquerade=None):
         """ check """
-        ordered_seb_keys_sources = get_ordered_seb_keys_sources()
         header = 'HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'
-        for source_function in ordered_seb_keys_sources:
+        for source_function in get_ordered_seb_keys_sources():
             seb_keys = source_function(course_key)
             if isinstance(seb_keys, dict) and 'BROWSER_KEYS' in seb_keys:
                 seb_keys = seb_keys['BROWSER_KEYS']
