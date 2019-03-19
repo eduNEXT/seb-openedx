@@ -1,0 +1,4 @@
+include AUTHORS.txt
+include LICENSE.txt
+include README.rst
+recursive-include seb_openedx *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
