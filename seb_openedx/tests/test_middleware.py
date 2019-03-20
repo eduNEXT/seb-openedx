@@ -54,7 +54,7 @@ class TestMiddleware(TestCase):
         self.assertEqual(response, None)
 
     @mock.patch('seb_openedx.edxapp_wrapper.get_course_module.import_module', side_effect=lambda x: FakeModuleForSebkeysTesting())
-    @override_settings(SEB_PERMISSION_COMPONENTS=['CheckSEBKeysRequestHash'])
+    @override_settings(SEB_PERMISSION_COMPONENTS=['CheckSEBHashBrowserExamKey'])
     def test_middleware_sebkeys(self, m_import):
         """ Test that middleware returns None when valid seb key is given """
         request = self.create_fake_request()
