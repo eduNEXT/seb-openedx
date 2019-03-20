@@ -41,7 +41,7 @@ jobs:
           command: |
             . venv/bin/activate
             coverage run --source="." -m pytest
-            coverage report --fail-under=63 -m
+            coverage report --fail-under=72 -m
 
       - run:
           name: run quality analysis
@@ -81,4 +81,4 @@ jobs:
           command: |
             . venv/bin/activate
             coverage run --source="." --rcfile=.coveragerc -m pytest
-            coverage report --fail-under=63 --rcfile=.coveragerc -m
+            coverage report --fail-under=72 --rcfile=.coveragerc -m
