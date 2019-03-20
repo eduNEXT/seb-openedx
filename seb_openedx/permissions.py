@@ -2,9 +2,13 @@
 """ Permissions as classes """
 import abc
 import hashlib
+import logging
 from django.utils import six
 from django.conf import settings
-from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources
+from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources, get_config_by_course
+
+
+LOG = logging.getLogger(__name__)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -93,8 +97,19 @@ class CheckSEBKeysConfigKeyHash(CheckSEBHash, Permission):
     detailed_config_key = 'CONFIG_KEYS'
 
 
-def get_enabled_permission_classes():
+def get_enabled_permission_classes(course_key=None):
     """ retrieve ordered permissions from settings if available, otherwise use defaults """
+
+    try:
+        if course_key:
+            _config = get_config_by_course(course_key)
+            components = _config.get('PERMISSION_COMPONENTS', None)
+            if components:
+                return [globals()[comp] for comp in components]
+    except Exception:
+        LOG.error("Error trying to retrieve the permission classes for course %", course_key)
+
     if hasattr(settings, 'SEB_PERMISSION_COMPONENTS'):
         return [globals()[comp] for comp in settings.SEB_PERMISSION_COMPONENTS]
+
     return [AlwaysAllowStaff]
