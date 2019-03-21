@@ -16,7 +16,7 @@ def from_other_course_settings(course_key):
     course_module = get_course_module(course_key, depth=0)
     if hasattr(course_module, 'other_course_settings'):
         other_settings = course_module.other_course_settings
-        return other_settings.get('SEB_KEYS', None)
+        return other_settings.get('SAFE_EXAM_BROWSER', None)
     return None
 
 
@@ -24,12 +24,12 @@ def from_global_settings(course_key):
     """
     Retrieve from global settings, for example:
     # lms/env/common.py
-    SEB_KEYS = {
+    SAFE_EXAM_BROWSER = {
         "course-v1:edX+DemoX+Demo_Course": ["FAKE_SEB_KEY"]
     }
     """
-    if hasattr(settings, 'SEB_KEYS'):
-        return settings.SEB_KEYS.get(six.text_type(course_key), None)
+    if hasattr(settings, 'SAFE_EXAM_BROWSER'):
+        return settings.SAFE_EXAM_BROWSER.get(six.text_type(course_key), None)
     return None
 
 
@@ -38,8 +38,8 @@ def from_site_configuration(course_key):
     Get SEB keys from djangoapps.site_configuration
     """
     configuration_helpers = get_configuration_helpers()
-    if configuration_helpers.has_override_value('SEB_KEYS'):
-        keys_dict = configuration_helpers.get_configuration_value('SEB_KEYS')
+    if configuration_helpers.has_override_value('SAFE_EXAM_BROWSER'):
+        keys_dict = configuration_helpers.get_configuration_value('SAFE_EXAM_BROWSER')
         return keys_dict.get(six.text_type(course_key), None)
     return None
 
