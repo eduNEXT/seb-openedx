@@ -43,4 +43,4 @@ def plugin_settings(settings):
     settings.SEB_BLACKLIST_CHAPTERS = []
     # Options include 'DatabaseBannedUsersBackend' and 'UserprofileBannedUsersBackend' (not yet implemented)
     settings.SEB_USER_BANNING_BACKEND = 'DatabaseBannedUsersBackend'
-    settings.SEB_USER_BANNING_ENABLED = True
+    settings.SEB_USER_BANNING_ENABLED = False
