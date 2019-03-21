@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Tests for public user creation API. """
+""" Tests for the main middleware class of the SEB Open edX plugin. """
 import hashlib
 import mock
 from mock import Mock, patch
@@ -10,10 +10,10 @@ from django.test.utils import override_settings
 from seb_openedx.middleware import SecureExamBrowserMiddleware
 
 
-@patch.object(SecureExamBrowserMiddleware, 'get_config', Mock(return_value={}))
 @patch.object(SecureExamBrowserMiddleware, 'is_whitelisted_view', Mock(return_value=False))
 @patch.object(SecureExamBrowserMiddleware, 'is_blacklisted_chapter', Mock(return_value=True))
 @patch.object(SecureExamBrowserMiddleware, 'handle_masquerade', Mock(return_value=(None, None, {})))
+@patch('seb_openedx.middleware.get_config_by_course', Mock(return_value={}))
 @patch('seb_openedx.middleware.is_user_banned', Mock(return_value=False))
 @patch('seb_openedx.middleware.ban_user', Mock())
 @override_settings(SEB_KEY_SOURCES=['from_other_course_settings'], SERVICE_VARIANT='lms')
@@ -54,7 +54,7 @@ class TestMiddleware(TestCase):
         self.assertEqual(response, None)
 
     @mock.patch('seb_openedx.edxapp_wrapper.get_course_module.import_module', side_effect=lambda x: FakeModuleForSebkeysTesting())
-    @override_settings(SEB_PERMISSION_COMPONENTS=['CheckSEBKeysRequestHash'])
+    @override_settings(SEB_PERMISSION_COMPONENTS=['CheckSEBHashBrowserExamKey'])
     def test_middleware_sebkeys(self, m_import):
         """ Test that middleware returns None when valid seb key is given """
         request = self.create_fake_request()

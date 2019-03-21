@@ -50,3 +50,12 @@ def get_ordered_seb_keys_sources():
     if hasattr(settings, 'SEB_KEY_SOURCES'):
         return [globals()[source] for source in settings.SEB_KEY_SOURCES]
     return [from_global_settings, from_other_course_settings, from_site_configuration]
+
+
+def get_config_by_course(course_key):
+    """ get seb config for course """
+    for source_function in get_ordered_seb_keys_sources():
+        _config = source_function(course_key)
+        if isinstance(_config, dict):
+            return _config
+    return {}
