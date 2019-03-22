@@ -24,10 +24,9 @@ def is_user_banned(username, course_key):
     if not username:
         return False
 
-    if not is_user_banning_enabled(course_key):
-        return False
-
-    return _get_back_end().is_user_banned(username, course_key)
+    return (
+        is_user_banning_enabled(course_key) and _get_back_end().is_user_banned(username, course_key)
+    )
 
 
 def ban_user(username, course_key, banned_by):
