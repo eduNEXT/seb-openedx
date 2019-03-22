@@ -12,6 +12,10 @@ class ForbiddenCourseAccess(models.Model):
     last_modified_time = models.DateTimeField(auto_now_add=True)
     last_modified_by_username = models.CharField(max_length=150)
 
+    def __unicode__(self):
+        """ Nice printing """
+        return "{} at {}".format(self.username, self.course_id)
+
     class Meta(object):
         """ Meta """
         unique_together = ('username', 'course_id')

@@ -9,7 +9,7 @@ from django.apps import AppConfig
 class SebOpenEdxConfig(AppConfig):
     """App configuration"""
     name = 'seb_openedx'
-    verbose_name = "eduNEXT Openedx Extensions"
+    verbose_name = "Safe Exam Browser"
     plugin_app = {
         'url_config': {
             'lms.djangoapp': {

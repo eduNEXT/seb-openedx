@@ -104,7 +104,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
     # pylint: disable=too-many-arguments
     def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, context, user_name):
         """ handle what to return and do when access denied """
-        is_banned, new_ban = ban_user(user_name, course_key, 'self')
+        is_banned, new_ban = ban_user(user_name, course_key, request.user.username)
         is_courseware_view = bool(view_func.__name__ == get_courseware_index_view().__name__)
         context.update({"banned": is_banned, "is_new_ban": new_ban})
         if is_courseware_view:

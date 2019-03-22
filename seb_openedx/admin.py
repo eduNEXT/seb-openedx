@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Admin.py """
-from __future__ import unicode_literals
+from django.contrib import admin
 
-# Register your models here.
+from seb_openedx.models import ForbiddenCourseAccess
+
+admin.site.register(ForbiddenCourseAccess)
