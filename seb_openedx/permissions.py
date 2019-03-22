@@ -110,6 +110,20 @@ class CheckSEBHashBrowserExamKeyOrConfigKey(Permission):
         return config_key or browser_exam_key
 
 
+class AlwaysDenyAccess(Permission):
+    """ Always deny access """
+    def check(self, request, course_key, masquerade=None):
+        """ Don't even check, just block """
+        return False
+
+
+class AlwaysGrantAccess(Permission):
+    """ Always grant access """
+    def check(self, request, course_key, masquerade=None):
+        """ Don't even check, just grant """
+        return True
+
+
 def get_enabled_permission_classes(course_key=None):
     """ retrieve ordered permissions from settings if available, otherwise use defaults """
 
