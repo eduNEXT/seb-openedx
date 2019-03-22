@@ -8,7 +8,11 @@ from openedx.core.djangolib.markup import Text
     <%block name="pagecontent">
         ${Text(_('This course can only be accessed with "Safe Exam Browser"'))}
     </%block>
-    % if banned:
-	${Text(_('Additionally you have been banned, you may ask your teacher or systems administrator to unblock you.'))}
+</p>
+<p style="text-align: center;">
+    % if is_new_ban:
+        ${Text(_('Additionally you have been banned, you may ask your teacher or systems administrator to unblock you.'))}
+    % elif banned:
+        ${Text(_('You are banned from accessing the course, you may ask your teacher or systems administrator to unblock you.'))}
     % endif
 </p>
