@@ -15,7 +15,7 @@ from seb_openedx.middleware import SecureExamBrowserMiddleware
 @patch.object(SecureExamBrowserMiddleware, 'handle_masquerade', Mock(return_value=(None, None, {})))
 @patch('seb_openedx.middleware.get_config_by_course', Mock(return_value={}))
 @patch('seb_openedx.middleware.is_user_banned', Mock(return_value=False))
-@patch('seb_openedx.middleware.ban_user', Mock())
+@patch('seb_openedx.middleware.ban_user', Mock(return_value=(False, False,)))
 @override_settings(SEB_KEY_SOURCES=['from_other_course_settings'], SERVICE_VARIANT='lms')
 class TestMiddleware(TestCase):
     """ Tests for the seb-open-edx page """

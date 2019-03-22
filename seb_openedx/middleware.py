@@ -20,8 +20,6 @@ from seb_openedx.permissions import get_enabled_permission_classes
 from seb_openedx.seb_keys_sources import get_config_by_course
 
 LOG = logging.getLogger(__name__)
-SEB_KEYS = getattr(settings, 'SEB_KEYS', {})
-BANNING_ENABLED = getattr(settings, 'SEB_USER_BANNING_ENABLED', True)
 
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
@@ -60,7 +58,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             if not masquerade:
                 user_name = request.user.username
 
-            banned = BANNING_ENABLED and user_name and is_user_banned(user_name, course_key)
+            banned = is_user_banned(user_name, course_key)
 
             if not banned:
                 for permission in get_enabled_permission_classes(course_key):
@@ -77,8 +75,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
                     view_kwargs,
                     course_key,
                     context,
-                    user_name,
-                    banned
+                    user_name
                 )
 
         return None
@@ -105,12 +102,11 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         return None, None, {}
 
     # pylint: disable=too-many-arguments
-    def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, context, user_name, banned):
+    def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, context, user_name):
         """ handle what to return and do when access denied """
-        if BANNING_ENABLED and user_name and not banned:
-            ban_user(user_name, course_key, '')
+        is_banned, new_ban = ban_user(user_name, course_key, request.user.username)
         is_courseware_view = bool(view_func.__name__ == get_courseware_index_view().__name__)
-        context.update({"banned": banned})
+        context.update({"banned": is_banned, "is_new_ban": new_ban})
         if is_courseware_view:
             return self.courseware_error_response(request, context, *view_args, **view_kwargs)
         return self.generic_error_response(request, course_key, context)

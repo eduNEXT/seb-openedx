@@ -4,21 +4,57 @@ from datetime import datetime
 from django.conf import settings
 from django.utils import six
 from seb_openedx.models import ForbiddenCourseAccess
+from seb_openedx.seb_keys_sources import get_config_by_course
+
+
+def is_user_banning_enabled(course_key=None):
+    """
+    Wrapper function to find the status of the banning feature per course or globally
+    """
+    _config = get_config_by_course(course_key)
+    return _config.get('USER_BANNING_ENABLED', settings.SEB_USER_BANNING_ENABLED)
 
 
 def is_user_banned(username, course_key):
-    """ exposed function to check if user is already banned """
-    return _get_back_end().is_user_banned(username, course_key)
+    """
+    Public function to check if user is already banned
+
+    The function will return False if the feature is turned off for a given course
+    """
+    if not username:
+        return False
+
+    return (
+        is_user_banning_enabled(course_key) and _get_back_end().is_user_banned(username, course_key)
+    )
 
 
 def ban_user(username, course_key, banned_by):
-    """ exposed function to check if user is already banned """
+    """
+    Public function to ban user.
+
+    Returns a tuple containing boolean values
+        - is the user banned
+        - is this a new ban
+    """
+    if not username:
+        return (False, False,)
+
+    if not is_user_banning_enabled(course_key):
+        return (False, False)
+
+    if is_user_banned(username, course_key):
+        return (True, False,)
+
     last_modified_time = datetime.now()
     _get_back_end().ban_user(username, course_key, last_modified_time, banned_by)
+    return (True, True,)
 
 
 def unban_user(username, course_key, banned_by):
-    """ exposed function to check if user is already banned """
+    """
+    Public function to remove the ban on a given user
+    """
     last_modified_time = datetime.now()
     _get_back_end().unban_user(username, course_key, last_modified_time, banned_by)
 
