@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 from opaque_keys.edx.keys import CourseKey
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.views.generic import TemplateView
 from django.shortcuts import render
 from seb_openedx.user_banning import ban_user, unban_user, get_all_banning_data
@@ -27,6 +27,8 @@ class TableView(TemplateView):  # pylint: disable=too-many-ancestors
             unban_user(username, course_key, request.user.username)
 
         elif action == "ban":
-            ban_user(username, course_key, request.user.username)
+            banned, _ = ban_user(username, course_key, request.user.username)
+            if not banned:
+                return HttpResponseBadRequest("Could not ban the user from this page")
 
         return HttpResponseRedirect(self.request.path_info)
