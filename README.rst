@@ -1,4 +1,9 @@
 
+.. image:: https://circleci.com/gh/eduNEXT/seb-openedx.svg?style=shield
+    :target: https://circleci.com/gh/eduNEXT/seb-openedx
+    :alt: Build Status (CircleCI)
+
+
 What is SEB?
 ============
 
