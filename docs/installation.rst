@@ -312,4 +312,4 @@ We do want to give you the information you need to install this plugin in your e
 
 #. Run the database migrations
 
-    This is necessary for the user banning feature. Do so with any available methods from your distribution of Open edX.
+    This is necessary to create the tables that store the user banning. Running the migrations is obligatory. Do so with any available methods from your distribution of Open edX.
