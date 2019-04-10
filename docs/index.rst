@@ -19,8 +19,7 @@ Table of Content
 
 Project Background
 ==================
-This project was build thanks to the contributions of the `ETH Zürich <https://www.ethz.ch>`_ and the `Swiss Mooc Service <https://www.swissmooc.ch>`_ and it is currently build and maintained by `eduNEXT <https://edunext.co>`_.
-
+This project was build thanks to the contributions of the `ETH Zürich <https://www.ethz.ch>`_, the `Safe Exam Browser <https://safeexambrowser.org/>`_ Open Source project and the `Swiss Mooc Service <https://www.swissmooc.ch>`_. It is currently build and maintained by `eduNEXT <https://edunext.co>`_.
 
 Implementation notes
 ====================

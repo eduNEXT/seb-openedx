@@ -65,6 +65,20 @@ The `devstack <https://github.com/edx/devstack>`_ install based on docker is a v
             exit
             make studio-restart
 
+        .. note::
+            We are running the installation in editable mode (-e). When developing or testing, if you make any changes to the code, the server should restart automatically. This will happen if you checkout different tags or branches of the code as well. To see the server restart in action you can see the logs using
+
+            .. code-block:: bash
+
+                docker logs edx.devstack.lms -f
+
+            You can also restart the server manually with
+
+            .. code-block:: bash
+
+                make lms-restart
+
+
 
 #. Add the seb_opened middleware to the lms and studio.
 

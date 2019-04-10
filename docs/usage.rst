@@ -127,6 +127,8 @@ This is done on a per-course basis and can be modified in 3 different locations 
 
     As before for the global settings, you can add a key ``SAFE_EXAM_BROWSER`` to the ``lms.env.json`` file and inside of it, a dictionary with objects containing the ``<course_id>`` and configurations.
 
+    Here is an example of setting restrictions on two different courses at the same time. The course ``course-v1:seb-openedx+course_1+2019`` uses the simple list notation and the ``course-v1:seb-openedx+course_2+2019`` uses a more advanced notation with more settings.
+
     .. code-block:: json
 
         "SAFE_EXAM_BROWSER":{
@@ -147,7 +149,8 @@ This is done on a per-course basis and can be modified in 3 different locations 
                 "9887f32e590cd8827e........5088a4bd5c4555e4eef82"
               ],
               "USER_BANNING_ENABLED":true
-        },
+            }
+        }
 
     Using ansible:
 
