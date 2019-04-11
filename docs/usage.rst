@@ -127,6 +127,8 @@ This is done on a per-course basis and can be modified in 3 different locations 
 
     As before for the global settings, you can add a key ``SAFE_EXAM_BROWSER`` to the ``lms.env.json`` file and inside of it, a dictionary with objects containing the ``<course_id>`` and configurations.
 
+    Here is an example of setting restrictions on two different courses at the same time. The course ``course-v1:seb-openedx+course_1+2019`` uses the simple list notation and the ``course-v1:seb-openedx+course_2+2019`` uses a more advanced notation with more settings.
+
     .. code-block:: json
 
         "SAFE_EXAM_BROWSER":{
@@ -147,7 +149,8 @@ This is done on a per-course basis and can be modified in 3 different locations 
                 "9887f32e590cd8827e........5088a4bd5c4555e4eef82"
               ],
               "USER_BANNING_ENABLED":true
-        },
+            }
+        }
 
     Using ansible:
 
@@ -190,6 +193,16 @@ This is done on a per-course basis and can be modified in 3 different locations 
     Here is an example with the same configuration as before:
 
     .. image:: images/site_configuration_data.png
+
+
+    .. note::
+        The site configuration module uses a cache to improve the read performance for succesive reads. Unlike other caches in the platform that use memcached, this is a local thread cache that is implemented in the django-crud package.
+
+        When you change values in the site configuration object, the easiest way to break the cache is to do a process restart.
+
+        .. code-block:: bash
+
+            make lms-restart
 
 
 Advanced usage
@@ -236,6 +249,19 @@ Chapter Blacklisting
 
 In the previous section we mentioned that ``"courseware"`` can be whitelisted. This would grant a user complete access to the course content thus defeating the purpose of the SEB Open edX plugin. For this the *Chapter Blacklisting* allows you to mark specific chapters for secure access.
 
+Here it is worth noting that the naming convention is used differently in the user visible pages and in the code.
+
+*Code*
+
+Both the Code and the `OLX or Open Learning XML <https://open.edx.org/blog/open-learning-xml-olx-format/>`_ use a hierarchy composed of ``course > chapter > sequential > vertical``. This is the convention used for development here.
+
+*Studio*
+
+On Studio, the exact same hierarchy is composed of ``course > section > subsection > unit``.
+
+This means that a ``chapter`` is the same a a ``section`` and a ``sequential`` the same as a ``subsection``.
+
+
 Example:
 
 .. code-block:: json
@@ -271,6 +297,10 @@ Your chapter ID is:
 Which means your chapter ID is `e87b8744ea3949989f8aa113ad428515`.
 
 As always you can use a list of IDs for multiple chapters.
+
+.. note::
+    Currently only chapters are supported for blacklisting. Support for sections or verticals might come in the future.
+
 
 
 User Banning

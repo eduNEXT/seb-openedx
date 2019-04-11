@@ -4,10 +4,10 @@
     :alt: Build Status (CircleCI)
 
 
-What is SEB?
-============
+What is Safe Exam Browser (SEB)?
+================================
 
-`Safe Exam Browser <https://safeexambrowser.org/>`_ is a webbrowser-environment to carry out online exams safely. The software changes any computer into a secure workstation. It regulates access to resources like system functions, other websites and applications and prevents unauthorised resources being used during an exam.
+`Safe Exam Browser <https://safeexambrowser.org/>`_ (SEB) is an application to carry out e-assessments safely. The freeware application is available for Windows, macOS and iOS. It turns any computer temporarily into a secure workstation. It controls access to resources like system functions, other websites and applications and prevents unauthorized resources being used during an exam. Safe Exam Browser can work with Open edX to control what a student can access during a Open edX quiz attempt. With the SEB Open edX plugin you activate the SEB support in Open edX and now only students using an approved version of SEB and the correct settings will be able to access the quiz in your Open edX course. The Safe Exam Browser is offered under a Mozilla Public License and supported by the `SEB Consortium <https://safeexambrowser.org/consortium/>`_.
 
 
 What is Open edX?
