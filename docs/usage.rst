@@ -123,7 +123,7 @@ The idea with the Safe Exam Browser is to control the access from students in th
 
 This is done on a per-course basis and can be modified in 3 different locations as configured in the **SEB_KEY_SOURCES** variable.
 
-#. Global settings ``"from_global_setting``
+#. Global settings ``from_global_setting``
 
     As before for the global settings, you can add a key ``SAFE_EXAM_BROWSER`` to the ``lms.env.json`` file and inside of it, a dictionary with objects containing the ``<course_id>`` and configurations.
 

@@ -15,6 +15,7 @@ Table of Content
 
    installation
    usage
+   seb-server
 
 
 Project Background
