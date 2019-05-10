@@ -44,6 +44,26 @@ def from_site_configuration(course_key):
     return None
 
 
+def to_site_configuration(course_key, config):
+    """
+    Set SEB keys on djangoapps.site_configuration.
+    Replaces existing configuration
+    """
+    course_id = six.text_type(course_key)
+
+    site_configuration = get_configuration_helpers().get_current_site_configuration()
+
+    if not site_configuration:
+        return False
+
+    if 'SAFE_EXAM_BROWSER' not in site_configuration.values:
+        site_configuration.values['SAFE_EXAM_BROWSER'] = {}
+
+    site_configuration.values['SAFE_EXAM_BROWSER'][course_id] = config
+    site_configuration.save()
+    return True
+
+
 def get_ordered_seb_keys_sources():
     """ get key sources as specified on settings, or the default ones """
     # First one has precedence over second, second over third and so forth.
@@ -59,3 +79,20 @@ def get_config_by_course(course_key):
         if isinstance(_config, dict):
             return _config
     return {}
+
+
+def get_ordered_seb_keys_destinations():
+    """ Get key storage locations as specified on settings, or the default ones """
+    if hasattr(settings, 'SEB_KEY_DESTINATIONS'):
+        return [globals()[source] for source in settings.SEB_KEY_DESTINATIONS]
+    return [to_site_configuration]
+
+
+def save_course_config(course_key, config):
+    """
+    Sets the configuration to the
+    """
+    for destination_function in get_ordered_seb_keys_destinations():
+        if destination_function(course_key, config):
+            return True
+    return False

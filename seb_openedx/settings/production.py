@@ -44,6 +44,10 @@ def plugin_settings(settings):
         'SEB_KEY_SOURCES',
         settings.SEB_KEY_SOURCES
     )
+    settings.SEB_KEY_DESTINATIONS = getattr(settings, 'ENV_TOKENS', {}).get(
+        'SEB_KEY_DESTINATIONS',
+        settings.SEB_KEY_DESTINATIONS
+    )
     settings.SEB_USER_BANNING_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
         'SEB_USER_BANNING_BACKEND',
         settings.SEB_USER_BANNING_BACKEND

@@ -37,6 +37,7 @@ def plugin_settings(settings):
     settings.SEB_EDXMAKO_MODULE = 'seb_openedx.edxapp_wrapper.backends.edxmako_module_h_v1'
     settings.SEB_PERMISSION_COMPONENTS = ['AlwaysAllowStaff', 'CheckSEBHashBrowserExamKeyOrConfigKey']
     settings.SEB_KEY_SOURCES = ['from_global_settings', 'from_other_course_settings', 'from_site_configuration']
+    settings.SEB_KEY_DESTINATIONS = ['to_site_configuration']
 
     # When SEB determines the access is denied one may specify what to whitelist/blacklist more granularly
     settings.SEB_WHITELIST_PATHS = []
