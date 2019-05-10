@@ -58,5 +58,5 @@ class SebConfiguration(APIView):
             )
 
         config = serialized_config.validated_data
-        save_course_config(course_key, config)
+        save_course_config(course_key, config, user_id=request.user.id)
         return Response(config)

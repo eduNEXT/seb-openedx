@@ -14,6 +14,7 @@ class SettingsClass(object):
 
 DEBUG = True
 SETTINGS = SettingsClass()
+SETTINGS.FEATURES = {}
 plugin_settings(SETTINGS)
 vars().update(SETTINGS.__dict__)
 SEB_COURSEWARE_MODULE = 'seb_openedx.tests.test_utils'

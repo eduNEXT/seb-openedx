@@ -2,10 +2,14 @@
 SEB KEYS FETCHING
 Available functions that can be used to fetch Secure Exam Browser keys
 """
+import logging
+
 from django.utils import six
 from django.conf import settings
-from seb_openedx.edxapp_wrapper.get_course_module import get_course_module
+from seb_openedx.edxapp_wrapper.get_course_module import get_course_module, modulestore_update_item
 from seb_openedx.edxapp_wrapper.get_configuration_helpers import get_configuration_helpers
+
+LOG = logging.getLogger(__name__)
 
 
 def from_other_course_settings(course_key):
@@ -13,11 +17,39 @@ def from_other_course_settings(course_key):
     ENABLE_OTHER_COURSE_SETTINGS must be enabled for this option to work,
     meaning Open edX version >= release-2018-08-07-11.59 (e.g. Hawtorn doesn't work)
     """
+    if not settings.FEATURES.get('ENABLE_OTHER_COURSE_SETTINGS', False):
+        return None
+
     course_module = get_course_module(course_key, depth=0)
     if hasattr(course_module, 'other_course_settings'):
         other_settings = course_module.other_course_settings
         return other_settings.get('SAFE_EXAM_BROWSER', None)
     return None
+
+
+def to_other_course_settings(course_key, config, **kwargs):
+    """
+    Set SEB keys on the studio compatible OTHER_COURSE_SETTINGS_DICT.
+    Replaces existing configuration
+    """
+    if not settings.FEATURES.get('ENABLE_OTHER_COURSE_SETTINGS', False):
+        return False
+
+    user_id = kwargs.get('user_id')
+    course_module = get_course_module(course_key, depth=0)
+
+    if not hasattr(course_module.other_course_settings, 'SAFE_EXAM_BROWSER'):
+        course_module.other_course_settings['SAFE_EXAM_BROWSER'] = {}
+
+    course_module.other_course_settings['SAFE_EXAM_BROWSER'] = config
+
+    try:
+        modulestore_update_item(course_key, course_module, user_id)
+    except Exception as e:
+        LOG.error("Could not store SEB configuration for %s on other_settings, due to %s", course_key, e)
+        return False
+
+    return True
 
 
 def from_global_settings(course_key):
@@ -44,7 +76,7 @@ def from_site_configuration(course_key):
     return None
 
 
-def to_site_configuration(course_key, config):
+def to_site_configuration(course_key, config, **kwargs):
     """
     Set SEB keys on djangoapps.site_configuration.
     Replaces existing configuration
@@ -85,14 +117,14 @@ def get_ordered_seb_keys_destinations():
     """ Get key storage locations as specified on settings, or the default ones """
     if hasattr(settings, 'SEB_KEY_DESTINATIONS'):
         return [globals()[source] for source in settings.SEB_KEY_DESTINATIONS]
-    return [to_site_configuration]
+    return [to_other_course_settings, to_site_configuration]
 
 
-def save_course_config(course_key, config):
+def save_course_config(course_key, config, **kwargs):
     """
     Sets the configuration to the
     """
     for destination_function in get_ordered_seb_keys_destinations():
-        if destination_function(course_key, config):
+        if destination_function(course_key, config, **kwargs):
             return True
     return False

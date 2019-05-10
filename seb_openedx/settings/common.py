@@ -30,6 +30,7 @@ def plugin_settings(settings):
     See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
     settings.SEB_COURSE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'
+    settings.SEB_UPDATE_MODULESTORE = 'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'
     settings.SEB_COURSEWARE_MODULE = 'seb_openedx.edxapp_wrapper.backends.get_courseware_module_h_v1'
     settings.SEB_COURSEWARE_INDEX_VIEW = 'seb_openedx.edxapp_wrapper.backends.get_courseware_index_view_h_v1'
     settings.SEB_GET_CHAPTER_FROM_LOCATION = 'seb_openedx.edxapp_wrapper.backends.get_chapter_from_location_h_v1'
@@ -37,7 +38,7 @@ def plugin_settings(settings):
     settings.SEB_EDXMAKO_MODULE = 'seb_openedx.edxapp_wrapper.backends.edxmako_module_h_v1'
     settings.SEB_PERMISSION_COMPONENTS = ['AlwaysAllowStaff', 'CheckSEBHashBrowserExamKeyOrConfigKey']
     settings.SEB_KEY_SOURCES = ['from_global_settings', 'from_other_course_settings', 'from_site_configuration']
-    settings.SEB_KEY_DESTINATIONS = ['to_site_configuration']
+    settings.SEB_KEY_DESTINATIONS = ['to_other_course_settings', 'to_site_configuration']
 
     # When SEB determines the access is denied one may specify what to whitelist/blacklist more granularly
     settings.SEB_WHITELIST_PATHS = []

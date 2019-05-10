@@ -16,6 +16,10 @@ def plugin_settings(settings):
         'SEB_COURSE_MODULE',
         settings.SEB_COURSE_MODULE
     )
+    settings.SEB_UPDATE_MODULESTORE = getattr(settings, 'ENV_TOKENS', {}).get(
+        'SEB_UPDATE_MODULESTORE',
+        settings.SEB_UPDATE_MODULESTORE
+    )
     settings.SEB_COURSEWARE_MODULE = getattr(settings, 'ENV_TOKENS', {}).get(
         'SEB_COURSEWARE_MODULE',
         settings.SEB_COURSEWARE_MODULE
