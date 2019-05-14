@@ -35,7 +35,10 @@ def to_other_course_settings(course_key, config, **kwargs):
     if not settings.FEATURES.get('ENABLE_OTHER_COURSE_SETTINGS', False):
         return False
 
-    user_id = kwargs.get('user_id')
+    user_id = kwargs.get('user_id', None)
+    if not user_id:
+        return False
+
     course_module = get_course_module(course_key, depth=0)
 
     if not hasattr(course_module.other_course_settings, 'SAFE_EXAM_BROWSER'):

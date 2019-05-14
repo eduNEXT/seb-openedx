@@ -40,7 +40,9 @@ class SebConfiguration(APIView):
         config = get_config_by_course(course_key)
         serialized_config = SebConfigurationSerializer(data=config)
         serialized_config.is_valid(raise_exception=True)
-        return Response(serialized_config.validated_data)
+        if serialized_config.validated_data:
+            return Response(serialized_config.validated_data)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, course_id, *args, **kwargs):
         """
@@ -60,3 +62,51 @@ class SebConfiguration(APIView):
         config = serialized_config.validated_data
         save_course_config(course_key, config, user_id=request.user.id)
         return Response(config)
+
+    def put(self, request, course_id, *args, **kwargs):
+        """
+        Updates a course configuration.
+        If no configuration already exists it will create it.
+        """
+        serialized_config = SebConfigurationSerializer(data=request.data)
+        serialized_config.is_valid(raise_exception=True)
+
+        course_key = CourseKey.from_string(course_id)
+
+        config = serialized_config.validated_data
+        save_course_config(course_key, config, user_id=request.user.id)
+        save_course_config(course_key, config)
+        return Response(config)
+
+    def patch(self, request, course_id, *args, **kwargs):
+        """
+        Partially updates a course configuration.
+        """
+        serialized_config = SebConfigurationSerializer(data=request.data)
+        serialized_config.is_valid(raise_exception=True)
+
+        course_key = CourseKey.from_string(course_id)
+        current_config = get_config_by_course(course_key)
+        if not current_config:
+            current_config = {}
+
+        new_config = serialized_config.validated_data
+        current_config.update(new_config)
+
+        save_course_config(course_key, current_config, user_id=request.user.id)
+        return Response(current_config)
+
+    def delete(self, request, course_id, *args, **kwargs):
+        """
+        Deletes an existing course configuration.
+        """
+        course_key = CourseKey.from_string(course_id)
+
+        save_course_config(course_key, None, user_id=request.user.id)
+
+        current_config = get_config_by_course(course_key)
+        if current_config:
+            # Sending no user_id makes the location default to the site_configuration
+            save_course_config(course_key, None)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
