@@ -126,6 +126,9 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         alias_current_path = paths_matched[0] if paths_matched else None
         whitelist_paths = config.get('WHITELIST_PATHS', [])
 
+        if views_module.startswith('seb_openedx.api'):
+            return True
+
         if not whitelist_paths:
             return False
 
