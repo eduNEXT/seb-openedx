@@ -75,7 +75,6 @@ class SebConfiguration(APIView):
 
         config = serialized_config.validated_data
         save_course_config(course_key, config, user_id=request.user.id)
-        save_course_config(course_key, config)
         return Response(config)
 
     def patch(self, request, course_id, *args, **kwargs):
