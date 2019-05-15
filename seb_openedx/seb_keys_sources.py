@@ -48,8 +48,8 @@ def to_other_course_settings(course_key, config, **kwargs):
 
     try:
         modulestore_update_item(course_key, course_module, user_id)
-    except Exception as e:
-        LOG.error("Could not store SEB configuration for %s on other_settings, due to %s", course_key, e)
+    except Exception as error:  # pylint: disable=broad-except
+        LOG.error("Could not store SEB configuration for %s on other_settings, due to %s", course_key, error)
         return False
 
     return True
@@ -116,7 +116,7 @@ def get_config_by_course(course_key):
     return {}
 
 
-def get_ordered_seb_keys_destinations():
+def get_ordered_seb_keys_dest():
     """ Get key storage locations as specified on settings, or the default ones """
     if hasattr(settings, 'SEB_KEY_DESTINATIONS'):
         return [globals()[source] for source in settings.SEB_KEY_DESTINATIONS]
@@ -125,9 +125,9 @@ def get_ordered_seb_keys_destinations():
 
 def save_course_config(course_key, config, **kwargs):
     """
-    Sets the configuration to the
+    Sets the configuration to the first available destination
     """
-    for destination_function in get_ordered_seb_keys_destinations():
+    for destination_function in get_ordered_seb_keys_dest():
         if destination_function(course_key, config, **kwargs):
             return True
     return False

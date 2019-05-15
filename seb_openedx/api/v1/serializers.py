@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from rest_framework import serializers
 
 
+# pylint: disable=abstract-method
 class SebConfigurationSerializer(serializers.Serializer):
     """
     Converts a SEB configuration from a json into a validated python dict
