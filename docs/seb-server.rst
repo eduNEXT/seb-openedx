@@ -19,7 +19,7 @@ It uses Json as the payload format.
 
 The API has one resource, namely the Course SEB Configuration. This resource is located at:
 
-``https://courses.yourdomain.com/seb-openedx/api/v1/configuration/<COURSE_ID>/``
+``https://courses.yourdomain.com/seb-openedx/api/v1/course/<COURSE_ID>/configuration/``
 
 Methods
 -------
@@ -28,7 +28,7 @@ The API has the usual available methods to read, update, create and delete SEB C
 
 GET
 ---
-Issuing a GET request to ``https://courses.yourdomain.com/seb-openedx/api/v1/configuration/<COURSE_ID>/`` should return a json representation of the configuration.
+Issuing a GET request to ``https://courses.yourdomain.com/seb-openedx/api/v1/course/<COURSE_ID>/configuration/`` should return a json representation of the configuration.
 
 For example:
 
@@ -51,7 +51,7 @@ It the course_id does not have a SEB configuration then a 404 error will be retu
 
 POST
 ----
-Issuing a POST request to ``https://courses.yourdomain.com/seb-openedx/api/v1/configuration/<COURSE_ID>/`` will create a new configuration for the give COURSE_ID.
+Issuing a POST request to ``https://courses.yourdomain.com/seb-openedx/api/v1/course/<COURSE_ID>/configuration/`` will create a new configuration for the give COURSE_ID. If the resource already exists the API will return a 422 'unable to process request' error.
 
 The payload data must be a json object that contains a valid configuration as detailed on the `usage <usage>`_ section. Otherwise a http 400 error will be returned.
 
@@ -67,7 +67,7 @@ The list of keys for the json object must include either a BEK or CK list, but m
 
 PUT
 ---
-Issuing a PUT request is very similar to a POST request, but in this case the object will be updated. If the object does not exist, then an error 400 will be returned.
+Issuing a PUT request is very similar to a POST request, but in this case the object will be updated. If the object does not exist, then an it will be created. Calling put is an idempotent operation.
 
 
 PATCH
@@ -77,7 +77,7 @@ The API allows the use of the PATCH request to issue a partial update. This case
 
 DELETE
 ------
-Sending a DELETE request to ``https://courses.yourdomain.com/seb-openedx/api/v1/configuration/<COURSE_ID>/`` will delete the SEB configuration for the course in question.
+Sending a DELETE request to ``https://courses.yourdomain.com/seb-openedx/api/v1/course/<COURSE_ID>/configuration/`` will delete the SEB configuration for the course in question.
 
 .. note::
     The API can alter the information stored at the ``site configuration`` and ``other_course_settings`` in studio. However the information stored in the ``global_settings`` is out of reach for the python process serving the API and therefore not deletable. Editing is valid since the configuration stored in the other sources will override the ``global_settings``.

@@ -61,6 +61,11 @@ This is the list of variables that you can alter globally
 
     List of locations where the course settings will be read from.
 
+- **SEB_KEY_DESTINATIONS**
+    Default: ``['to_other_course_settings', 'to_site_configuration']``
+
+    List of locations where the course settings will be stored to.
+
 - **SEB_USER_BANNING_BACKEND**
     Default: ``'DatabaseBannedUsersBackend'``
 
@@ -70,6 +75,11 @@ This is the list of variables that you can alter globally
     Default: ``False``
 
     Global feature toggle for the user banning feature. Can be modified on a per-course basis.
+
+- **SEB_UPDATE_MODULESTORE**
+    Default: ``'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'``
+
+    This setting controls the backend implementation for the update module wrapper. Defaults to the hawthorn compatible implementation.
 
 - **SEB_COURSE_MODULE**
     Default: ``'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'``
