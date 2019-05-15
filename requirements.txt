@@ -1,6 +1,8 @@
 Django>=1.8,<2.0
 django-filter==2.0.0
 djangorestframework==3.8.2
+django-oauth2-provider==0.2.6.1
+git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c#egg=djangorestframework-oauth==1.1.1
 Markdown==2.6.11
 pbr==4.2.0
 pytz==2018.5

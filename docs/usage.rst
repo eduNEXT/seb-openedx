@@ -61,6 +61,11 @@ This is the list of variables that you can alter globally
 
     List of locations where the course settings will be read from.
 
+- **SEB_KEY_DESTINATIONS**
+    Default: ``['to_other_course_settings', 'to_site_configuration']``
+
+    List of locations where the course settings will be stored to.
+
 - **SEB_USER_BANNING_BACKEND**
     Default: ``'DatabaseBannedUsersBackend'``
 
@@ -70,6 +75,11 @@ This is the list of variables that you can alter globally
     Default: ``False``
 
     Global feature toggle for the user banning feature. Can be modified on a per-course basis.
+
+- **SEB_UPDATE_MODULESTORE**
+    Default: ``'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'``
+
+    This setting controls the backend implementation for the update module wrapper. Defaults to the hawthorn compatible implementation.
 
 - **SEB_COURSE_MODULE**
     Default: ``'seb_openedx.edxapp_wrapper.backends.get_course_module_h_v1'``
@@ -123,7 +133,7 @@ The idea with the Safe Exam Browser is to control the access from students in th
 
 This is done on a per-course basis and can be modified in 3 different locations as configured in the **SEB_KEY_SOURCES** variable.
 
-#. Global settings ``"from_global_setting``
+#. Global settings ``from_global_setting``
 
     As before for the global settings, you can add a key ``SAFE_EXAM_BROWSER`` to the ``lms.env.json`` file and inside of it, a dictionary with objects containing the ``<course_id>`` and configurations.
 
