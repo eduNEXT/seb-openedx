@@ -67,7 +67,7 @@ The list of keys for the json object must include either a BEK or CK list, but m
 
 PUT
 ---
-Issuing a PUT request is very similar to a POST request, but in this case the object will be updated. If the object does not exist, then an it will be created. Calling put is an idempotent operation.
+Issuing a PUT request is very similar to a POST request, but in this case the object will be updated. If the object does not exist, then it will be created. Calling put is an idempotent operation.
 
 
 PATCH
