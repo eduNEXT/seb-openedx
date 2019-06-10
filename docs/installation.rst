@@ -79,7 +79,6 @@ The `devstack <https://github.com/edx/devstack>`_ install based on docker is a v
                 make lms-restart
 
 
-
 #. Add the seb_opened middleware to the lms and studio.
 
     So far we have installed the plugin. You can already see if the installation was successful by navigating to http://localhost:18000/seb-openedx/seb-info after login as a superuser. You will see the exact version of the plugin you have installed along with the git commit ID
@@ -217,6 +216,35 @@ The `devstack <https://github.com/edx/devstack>`_ install based on docker is a v
         You can also commit the changes into the ``edxops/edxapp:latest`` image. This will however affect all your environments.
 
 
+Upgrading existing code
+-----------------------
+
+To upgrade the current running version of the plugin, you need to obtain the correct version of the source code and then restart the lms. This example is done from the outside of the container but you can work from the container shell as well.
+
+
+#. Use git to pull the version that you want
+
+    .. code-block:: bash
+
+        cd src/edxapp/seb-openedx
+        git fetch origin
+
+        # Checkout tag 1.1.0 on branch 'branch_v1_1_0'
+        git checkout -b branch_v1_1_0 tags/v1.1.0
+
+#. Restart the lms
+
+    Since we installed it in the editable mode with the ``-e`` flag, there is no need to re-install. A simple restart will do.
+
+    .. code-block:: bash
+
+        cd ../../devstack
+
+        make lms-restart
+
+As before, you can navigate to http://localhost:18000/seb-openedx/seb-info as a superuser to find the exact version that is running on the platform.
+
+
 Native Installation
 ===================
 
@@ -286,8 +314,7 @@ To run the installation without the help of any script you still need to run the
         # edit the file by adding "seb_openedx.middleware.SecureExamBrowserMiddleware"
         # into the EXTRA_MIDDLEWARE_CLASSES array.
 
-# Restart the services
-
+#. Restart the services
 
     .. code-block:: shell
 
@@ -299,6 +326,38 @@ To run the installation without the help of any script you still need to run the
 
         /edx/bin/edxapp-migrate-lms
 
+
+Upgrading existing code
+-----------------------
+
+Upgrading the existing code on an already running installation is exactly the same as installing from scratch.
+
+
+For ansible managed installations this means running the installation scripts again, but make sure you have upgraded the version on the ``EDXAPP_EXTRA_REQUIREMENTS`` variable.
+
+.. code-block:: yaml
+
+    EDXAPP_EXTRA_REQUIREMENTS:
+          # SEB Plugin
+        - name: 'git+https://github.com/edunext/seb-openedx.git@<NEW_VERSION_TAG>#egg=seb-openedx==<NEW_VERSION>'
+
+For manually managed installations install again with the same steps as before and restart the processes.
+
+#. Install the new code
+
+    .. code-block:: shell
+
+        sudo su edxapp -s /bin/bash
+        /edx/bin/pip.edxapp install git+https://github.com/edunext/seb-openedx.git@<NEW_VERSION_TAG>#egg=seb-openedx==<NEW_VERSION>
+
+#. Restart the services
+
+    .. code-block:: shell
+
+        /edx/bin/supervisorctl restart all
+
+
+As before, you can navigate to https://<yourdomain>/seb-openedx/seb-info as a superuser to find the exact version that is running on the platform.
 
 
 Other Distributions
