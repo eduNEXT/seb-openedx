@@ -5,5 +5,5 @@ from django.conf.urls import url, include
 
 
 urlpatterns = [  # pylint: disable=invalid-name
-    url(r'^v1/', include('seb_openedx.api.v1.urls', namespace='seb-api-v1')),
+    url(r'^v1/', include(('seb_openedx.api.v1.urls', 'seb_openedx'), namespace='seb-api-v1')),
 ]

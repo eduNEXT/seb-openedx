@@ -202,5 +202,5 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
     def is_installed(cls):
         """ Returns weather this middleware is installed in the running django instance """
         middleware_class_path = sys.modules[cls.__module__].__name__ + '.' + cls.__name__
-        middlewares = settings.MIDDLEWARE_CLASSES if hasattr(settings, 'MIDDLEWARE_CLASSES') else settings.MIDDLEWARE
+        middlewares = settings.MIDDLEWARE if hasattr(settings, 'MIDDLEWARE') else settings.MIDDLEWARE
         return middleware_class_path in middlewares
