@@ -23,7 +23,11 @@ def from_other_course_settings(course_key):
     course_module = get_course_module(course_key, depth=0)
     if hasattr(course_module, 'other_course_settings'):
         other_settings = course_module.other_course_settings
-        return other_settings.get('SAFE_EXAM_BROWSER', None)
+        other_settings = other_settings.get('SAFE_EXAM_BROWSER', {})
+        if six.text_type(course_key) in other_settings:
+            return other_settings.get(six.text_type(course_key), None)
+        if other_settings:
+            return other_settings
     return None
 
 

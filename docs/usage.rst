@@ -193,8 +193,11 @@ This is done on a per-course basis and can be modified in 3 different locations 
 
     In this ``json`` field you can add the ``SAFE_EXAM_BROWSER`` key and inside of it the configurations for this course.
 
-    .. image:: images/other_course_settings_data.png
+    .. image:: images/other_course_settings_without_course_key.png
 
+    You could optionally use the course key as well
+
+    .. image:: images/other_course_settings_data.png
 
 #. Site Configuration in the admin ``from_site_configuration``
 
