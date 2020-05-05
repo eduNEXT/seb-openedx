@@ -3,6 +3,7 @@ import abc
 from datetime import datetime
 from django.conf import settings
 from django.utils import six
+from django.db.utils import ProgrammingError
 from seb_openedx.models import ForbiddenCourseAccess
 from seb_openedx.seb_keys_sources import get_config_by_course
 
@@ -119,7 +120,17 @@ class DatabaseBannedUsersBackend(BannedUsersBackend):
         forbidden_access.save()
 
     def get_all_banning_data(self):
-        return ForbiddenCourseAccess.objects.all()
+        """
+        Try to get all the banned users from the database
+        """
+        queryset = ForbiddenCourseAccess.objects.all()
+        try:
+            queryset.exists()
+            return queryset
+        except ProgrammingError:
+            # print "WE DO NOT HAVE THE TABLES"
+            # LOG FOR REAL
+            return queryset.none()
 
 
 class UserprofileBannedUsersBackend(BannedUsersBackend):

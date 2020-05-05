@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The generic views for the exc-core plugin project"""
+"""Handles the /seb-openedx/dashboard/ feature"""
 
 from __future__ import unicode_literals
 from opaque_keys.edx.keys import CourseKey
