@@ -6,10 +6,26 @@ import logging
 
 from django.utils import six
 from django.conf import settings
+from django.db.utils import ProgrammingError
+from seb_openedx.models import SebCourseConfiguration
 from seb_openedx.edxapp_wrapper.get_course_module import get_course_module, modulestore_update_item
 from seb_openedx.edxapp_wrapper.get_configuration_helpers import get_configuration_helpers
 
 LOG = logging.getLogger(__name__)
+
+
+def from_django_model(course_key):
+    """Get SEB settings from model SebCourseConfiguration."""
+    try:
+        model_settings = SebCourseConfiguration.get_as_dict_by_course_id(course_key)
+    except SebCourseConfiguration.DoesNotExist:
+        model_settings = None
+    except ProgrammingError:
+        model_settings = None
+        message = ("SebCourseConfiguration table not found, "
+                   "please verify the migrations for the `seb-openedx` app were successfully executed")
+        LOG.warning(message)
+    return model_settings
 
 
 def from_other_course_settings(course_key):
@@ -108,7 +124,7 @@ def get_ordered_seb_keys_sources():
     # First one has precedence over second, second over third and so forth.
     if hasattr(settings, 'SEB_KEY_SOURCES'):
         return [globals()[source] for source in settings.SEB_KEY_SOURCES]
-    return [from_global_settings, from_other_course_settings, from_site_configuration]
+    return [from_global_settings, from_other_course_settings, from_django_model, from_site_configuration]
 
 
 def get_config_by_course(course_key):
