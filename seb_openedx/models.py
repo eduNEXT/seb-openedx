@@ -41,7 +41,7 @@ class SebCourseConfiguration(models.Model):
     permission_components = models.TextField(blank=True, default=get_default_array_value(settings.SEB_PERMISSION_COMPONENTS))
     browser_keys = models.TextField(blank=True, default='')
     config_keys = models.TextField(blank=True, default='')
-    user_banning_enabled = models.BooleanField(default=get_default_array_value(settings.SEB_USER_BANNING_ENABLED))
+    user_banning_enabled = models.BooleanField(default=settings.SEB_USER_BANNING_ENABLED)
     blacklist_chapters = models.TextField(blank=True, default=get_default_array_value(settings.SEB_BLACKLIST_CHAPTERS))
     whitelist_paths = models.TextField(blank=True, default=get_default_array_value(settings.SEB_WHITELIST_PATHS))
 
@@ -57,11 +57,16 @@ class SebCourseConfiguration(models.Model):
     def get_as_dict_by_course_id(cls, course_id):
         """Get config by course_id."""
         instance = cls.objects.get(course_id=course_id)
+        permission_components = list(filter(None, instance.permission_components.split(SEPARATOR_CHAR)))
+        browser_keys = list(filter(None, instance.browser_keys.split(SEPARATOR_CHAR)))
+        config_keys = list(filter(None, instance.config_keys.split(SEPARATOR_CHAR)))
+        blacklist_chapters = list(filter(None, instance.blacklist_chapters.split(SEPARATOR_CHAR)))
+        whitelist_paths = list(filter(None, instance.whitelist_paths.split(SEPARATOR_CHAR)))
         return {
-            'PERMISSION_COMPONENTS': instance.permission_components.split(SEPARATOR_CHAR),
-            'BROWSER_KEYS': instance.browser_keys.split(SEPARATOR_CHAR),
-            'CONFIG_KEYS': instance.config_keys.split(SEPARATOR_CHAR),
+            'PERMISSION_COMPONENTS': permission_components,
+            'BROWSER_KEYS': browser_keys,
+            'CONFIG_KEYS': config_keys,
             'USER_BANNING_ENABLED': instance.user_banning_enabled,
-            'BLACKLIST_CHAPTERS': instance.blacklist_chapters.split(SEPARATOR_CHAR),
-            'WHITELIST_PATHS': instance.whitelist_paths.split(SEPARATOR_CHAR)
+            'BLACKLIST_CHAPTERS': blacklist_chapters,
+            'WHITELIST_PATHS': whitelist_paths,
         }
