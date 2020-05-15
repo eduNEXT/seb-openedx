@@ -57,7 +57,7 @@ This is the list of variables that you can alter globally
     Can be modified on a per-course basis.
 
 - **SEB_KEY_SOURCES**
-    Default: ``['from_global_settings', 'from_other_course_settings', 'from_site_configuration']``
+    Default: ``['from_global_settings', 'from_other_course_settings', 'from_django_model', 'from_site_configuration']``
 
     List of locations where the course settings will be read from.
 
@@ -217,6 +217,15 @@ This is done on a per-course basis and can be modified in 3 different locations 
 
             make lms-restart
 
+#. Model Configuration in the admin ``from_django_model``
+
+    Add the settings using a line break between them.
+
+    .. image:: images/seb_django_model.png
+
+
+    .. note::
+        It is required to run the migrations.
 
 Advanced usage
 ==============
