@@ -3,8 +3,7 @@ Test models for seb-openedx.
 """
 from django.test import TestCase
 from opaque_keys.edx.keys import CourseKey
-from seb_openedx.constants import SEPARATOR_CHAR
-from seb_openedx.models import SebCourseConfiguration
+from seb_openedx.tests.test_utils import get_seb_configuration_instance
 
 
 class TestSebCourseConfiguration(TestCase):
@@ -13,15 +12,7 @@ class TestSebCourseConfiguration(TestCase):
     def setUp(self):
         """setUp."""
         super(TestSebCourseConfiguration, self).setUp()
-        self.seb_course_configuration = SebCourseConfiguration.objects.create(
-            course_id=CourseKey.from_string('course-v1:edX+DemoX+Demo_Course'),
-            permission_components=SEPARATOR_CHAR.join(['AlwaysAllowStaff', 'CheckSEBHashBrowserExamKeyOrConfigKey']),
-            browser_keys=SEPARATOR_CHAR.join(['browser_key1', 'browser_key2']),
-            config_keys=SEPARATOR_CHAR.join(['config_key1', 'config_key2']),
-            user_banning_enabled=False,
-            blacklist_chapters='',
-            whitelist_paths=''
-        )
+        self.seb_course_configuration = get_seb_configuration_instance()
 
     def test_get_as_dict_by_course_id(self):
         """Must return a dictionary with a valid format for the class SecureExamBrowserMiddleware."""

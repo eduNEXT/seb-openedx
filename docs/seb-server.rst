@@ -80,7 +80,7 @@ DELETE
 Sending a DELETE request to ``https://courses.yourdomain.com/seb-openedx/api/v1/course/<COURSE_ID>/configuration/`` will delete the SEB configuration for the course in question.
 
 .. note::
-    The API can alter the information stored at the ``site configuration`` and ``other_course_settings`` in studio. However the information stored in the ``global_settings`` is out of reach for the python process serving the API and therefore not deletable. Editing is valid since the configuration stored in the other sources will override the ``global_settings``.
+    The API can alter the information stored at the ``django model``, ``site configuration`` and ``other_course_settings`` in studio. However the information stored in the ``global_settings`` is out of reach for the python process serving the API and therefore not deletable. Editing is valid since the configuration stored in the other sources will override the ``global_settings``.
 
 
 
@@ -92,4 +92,5 @@ In any mechanism of authentication, the permissions will be given only for globa
 
 Storage internals
 -----------------
-When available, the API will try to store the configuration in the ``other_course_settings`` field that is available in Studio. When this is not possible, then it will defer to use the ``site_configuration`` object.
+When available, the API will try to store the configuration in the ``django model``, then in the ``other_course_settings`` field that is available in Studio. When this is not possible, then it will defer to use the ``site_configuration`` object.
+The precedence of the storage locations for the API can be configured via the ``SEB_KEY_DESTINATIONS`` django setting. See `Variables`_.

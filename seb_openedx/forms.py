@@ -4,19 +4,13 @@ Forms for seb-openedx.
 """
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from seb_openedx.constants import SEPARATOR_CHAR
+from seb_openedx.constants import SEPARATOR_CHAR, SEB_ARRAY_FIELDS_MODEL
 from seb_openedx.models import SebCourseConfiguration
 
 
 class SebCourseConfigurationForm(forms.ModelForm):
     """Form model for SebCourseConfiguration."""
-    array_fields = [
-        'permission_components',
-        'browser_keys',
-        'config_keys',
-        'blacklist_chapters',
-        'whitelist_paths',
-    ]
+    array_fields = SEB_ARRAY_FIELDS_MODEL
 
     class Meta:
         """Meta."""

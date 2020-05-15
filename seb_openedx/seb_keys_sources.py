@@ -7,6 +7,7 @@ import logging
 from django.utils import six
 from django.conf import settings
 from django.db.utils import ProgrammingError
+from seb_openedx.constants import SEPARATOR_CHAR, SEB_NOT_TABLES_FOUND, SEB_ARRAY_FIELDS_MODEL
 from seb_openedx.models import SebCourseConfiguration
 from seb_openedx.edxapp_wrapper.get_course_module import get_course_module, modulestore_update_item
 from seb_openedx.edxapp_wrapper.get_configuration_helpers import get_configuration_helpers
@@ -22,9 +23,7 @@ def from_django_model(course_key):
         model_settings = None
     except ProgrammingError:
         model_settings = None
-        message = ("SebCourseConfiguration table not found, "
-                   "please verify the migrations for the `seb-openedx` app were successfully executed")
-        LOG.warning(message)
+        LOG.warning(SEB_NOT_TABLES_FOUND)
     return model_settings
 
 
@@ -99,6 +98,37 @@ def from_site_configuration(course_key):
     return None
 
 
+def to_django_model(course_key, config, **kwargs):
+    """
+    Set SEB keys on SebCourseConfiguration
+    Update existing configuration
+    Delete if config is None.
+    """
+    if not config:
+        try:
+            SebCourseConfiguration.objects.get(course_id=course_key).delete()
+        except SebCourseConfiguration.DoesNotExist:
+            LOG.info('seb_plugin: there is no configuration for this course %s', six.text_type(course_key))
+            return False
+        except ProgrammingError:
+            LOG.warning(SEB_NOT_TABLES_FOUND)
+            return False
+        return True
+    config = {key.lower(): value for key, value in config.items()}  # keys to lowercase
+    for key in SEB_ARRAY_FIELDS_MODEL:
+        if key in config:
+            config[key] = SEPARATOR_CHAR.join(config[key])
+    try:
+        SebCourseConfiguration.objects.update_or_create(
+            course_id=course_key,
+            defaults=config
+        )
+    except ProgrammingError:
+        LOG.warning(SEB_NOT_TABLES_FOUND)
+        return False
+    return True
+
+
 def to_site_configuration(course_key, config, **kwargs):
     """
     Set SEB keys on djangoapps.site_configuration.
@@ -140,7 +170,7 @@ def get_ordered_seb_keys_dest():
     """ Get key storage locations as specified on settings, or the default ones """
     if hasattr(settings, 'SEB_KEY_DESTINATIONS'):
         return [globals()[source] for source in settings.SEB_KEY_DESTINATIONS]
-    return [to_other_course_settings, to_site_configuration]
+    return [to_django_model, to_other_course_settings, to_site_configuration]
 
 
 def save_course_config(course_key, config, **kwargs):

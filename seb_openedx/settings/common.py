@@ -43,7 +43,7 @@ def plugin_settings(settings):
         'from_django_model',
         'from_site_configuration',
     ]
-    settings.SEB_KEY_DESTINATIONS = ['to_other_course_settings', 'to_site_configuration']
+    settings.SEB_KEY_DESTINATIONS = ['to_django_model', 'to_other_course_settings', 'to_site_configuration']
 
     # When SEB determines the access is denied one may specify what to whitelist/blacklist more granularly
     settings.SEB_WHITELIST_PATHS = []
