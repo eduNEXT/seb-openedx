@@ -170,7 +170,7 @@ def get_ordered_seb_keys_dest():
     """ Get key storage locations as specified on settings, or the default ones """
     if hasattr(settings, 'SEB_KEY_DESTINATIONS'):
         return [globals()[source] for source in settings.SEB_KEY_DESTINATIONS]
-    return [to_other_course_settings, to_site_configuration]
+    return [to_django_model, to_other_course_settings, to_site_configuration]
 
 
 def save_course_config(course_key, config, **kwargs):

@@ -62,7 +62,7 @@ This is the list of variables that you can alter globally
     List of locations where the course settings will be read from.
 
 - **SEB_KEY_DESTINATIONS**
-    Default: ``['to_other_course_settings', 'to_site_configuration']``
+    Default: ``['to_django_model', 'to_other_course_settings', 'to_site_configuration']``
 
     List of locations where the course settings will be stored to.
 
