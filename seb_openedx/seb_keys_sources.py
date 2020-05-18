@@ -7,6 +7,7 @@ import logging
 from django.utils import six
 from django.conf import settings
 from django.db.utils import ProgrammingError
+from seb_openedx.audit import audit_model
 from seb_openedx.constants import SEPARATOR_CHAR, SEB_NOT_TABLES_FOUND, SEB_ARRAY_FIELDS_MODEL
 from seb_openedx.models import SebCourseConfiguration
 from seb_openedx.edxapp_wrapper.get_course_module import get_course_module, modulestore_update_item
@@ -98,6 +99,7 @@ def from_site_configuration(course_key):
     return None
 
 
+@audit_model
 def to_django_model(course_key, config, **kwargs):
     """
     Set SEB keys on SebCourseConfiguration
