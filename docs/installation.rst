@@ -87,13 +87,15 @@ The `devstack <https://github.com/edx/devstack>`_ install based on docker is a v
 
     We recommend to do that through the ``EXTRA_MIDDLEWARE_CLASSES`` configuration setting.
 
+    In versions up to the open-release/ironwood of the codebase:
+
         .. code-block:: bash
 
             docker-compose exec lms bash -c "sed -i -e 's/\"EXTRA_MIDDLEWARE_CLASSES\": \[\]/\"EXTRA_MIDDLEWARE_CLASSES\": \[\"seb_openedx.middleware.SecureExamBrowserMiddleware\"\]/g' /edx/app/edxapp/lms.env.json"
             docker-compose exec studio bash -c "sed -i -e 's/\"EXTRA_MIDDLEWARE_CLASSES\": \[\]/\"EXTRA_MIDDLEWARE_CLASSES\": \[\"seb_openedx.middleware.SecureExamBrowserMiddleware\"\]/g' /edx/app/edxapp/cms.env.json"
             make lms-restart && make studio-restart
 
-    Or as always, you can do it interactively
+        Or as always, you can do it interactively
 
         For the lms
 
@@ -104,7 +106,7 @@ The `devstack <https://github.com/edx/devstack>`_ install based on docker is a v
             # edit the file by adding "seb_openedx.middleware.SecureExamBrowserMiddleware"
             # into the EXTRA_MIDDLEWARE_CLASSES array.
             exit
-            make studio-restart
+            make lms-restart
 
         For studio
 
@@ -117,6 +119,8 @@ The `devstack <https://github.com/edx/devstack>`_ install based on docker is a v
             exit
             make studio-restart
 
+    .. note::
+        In versions starting from to the open-release/juniper of the codebase the ``lms.env.json`` or ``cms.env.json`` file have been moved to ``/edx/etc/lms.yml`` and ``/edx/etc/studio.yml``
 
 #. Run the database migrations
 
