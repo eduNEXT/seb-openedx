@@ -38,12 +38,23 @@ class ForbiddenCourseAccess(models.Model):
 class SebCourseConfiguration(models.Model):
     """Model that stores settings per course for seb browser."""
     course_id = CourseKeyField(max_length=255, unique=True)
-    permission_components = models.TextField(blank=True, default=get_default_array_value(settings.SEB_PERMISSION_COMPONENTS))
+    permission_components = models.TextField(
+        blank=True,
+        default=get_default_array_value(getattr(settings, 'SEB_PERMISSION_COMPONENTS', [])),
+    )
     browser_keys = models.TextField(blank=True, default='')
     config_keys = models.TextField(blank=True, default='')
-    user_banning_enabled = models.BooleanField(default=settings.SEB_USER_BANNING_ENABLED)
-    blacklist_chapters = models.TextField(blank=True, default=get_default_array_value(settings.SEB_BLACKLIST_CHAPTERS))
-    whitelist_paths = models.TextField(blank=True, default=get_default_array_value(settings.SEB_WHITELIST_PATHS))
+    user_banning_enabled = models.BooleanField(
+        default=getattr(settings, 'SEB_USER_BANNING_ENABLED', False),
+    )
+    blacklist_chapters = models.TextField(
+        blank=True,
+        default=get_default_array_value(getattr(settings, 'SEB_BLACKLIST_CHAPTERS', [])),
+    )
+    whitelist_paths = models.TextField(
+        blank=True,
+        default=get_default_array_value(getattr(settings, 'SEB_WHITELIST_PATHS', [])),
+    )
 
     class Meta(object):
         """Meta."""
