@@ -2,7 +2,6 @@
 import abc
 from datetime import datetime
 from django.conf import settings
-from django.utils import six
 from seb_openedx.models import ForbiddenCourseAccess
 from seb_openedx.seb_keys_sources import get_config_by_course
 
@@ -64,8 +63,7 @@ def get_all_banning_data():
     return _get_back_end().get_all_banning_data()
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BannedUsersBackend(object):
+class BannedUsersBackend(object, metaclass=abc.ABCMeta):
     """ Abstract BannedUserBackend class """
 
     @abc.abstractmethod

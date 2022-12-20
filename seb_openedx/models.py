@@ -1,8 +1,7 @@
 """ Models """
-from __future__ import absolute_import, unicode_literals
+
 from django.conf import settings
 from django.db import models
-from django.utils import six
 from opaque_keys.edx.django.models import CourseKeyField
 from seb_openedx.constants import SEPARATOR_CHAR
 
@@ -60,19 +59,19 @@ class SebCourseConfiguration(models.Model):
         """Meta."""
         app_label = 'seb_openedx'
 
-    def __unicode__(self):
+    def __str__(self):
         """Formats impression of object."""
-        return six.text_type(self.course_id)
+        return str(self.course_id)
 
     @classmethod
     def get_as_dict_by_course_id(cls, course_id):
         """Get config by course_id."""
         instance = cls.objects.get(course_id=course_id)
-        permission_components = list(filter(None, instance.permission_components.split(SEPARATOR_CHAR)))
-        browser_keys = list(filter(None, instance.browser_keys.split(SEPARATOR_CHAR)))
-        config_keys = list(filter(None, instance.config_keys.split(SEPARATOR_CHAR)))
-        blacklist_chapters = list(filter(None, instance.blacklist_chapters.split(SEPARATOR_CHAR)))
-        whitelist_paths = list(filter(None, instance.whitelist_paths.split(SEPARATOR_CHAR)))
+        permission_components = list([_f for _f in instance.permission_components.split(SEPARATOR_CHAR) if _f])
+        browser_keys = list([_f for _f in instance.browser_keys.split(SEPARATOR_CHAR) if _f])
+        config_keys = list([_f for _f in instance.config_keys.split(SEPARATOR_CHAR) if _f])
+        blacklist_chapters = list([_f for _f in instance.blacklist_chapters.split(SEPARATOR_CHAR) if _f])
+        whitelist_paths = list([_f for _f in instance.whitelist_paths.split(SEPARATOR_CHAR) if _f])
         return {
             'PERMISSION_COMPONENTS': permission_components,
             'BROWSER_KEYS': browser_keys,
