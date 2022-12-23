@@ -28,7 +28,7 @@ class AlwaysAllowStaff(Permission):
         """ check """
         if masquerade and masquerade.role != 'staff':
             return False
-        if hasattr(request, 'user') and request.user.is_authenticated() and request.user.is_staff:
+        if hasattr(request, 'user') and request.user.is_authenticated and request.user.is_staff:
             return True
         return False
 
