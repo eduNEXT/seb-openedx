@@ -2,15 +2,20 @@
 SEB KEYS FETCHING
 Available functions that can be used to fetch Secure Exam Browser keys
 """
+from __future__ import absolute_import
+
 import logging
 
-from django.utils import six
 from django.conf import settings
 from django.db.utils import ProgrammingError
-from seb_openedx.constants import SEPARATOR_CHAR, SEB_NOT_TABLES_FOUND, SEB_ARRAY_FIELDS_MODEL
+
+from seb_openedx.constants import (SEB_ARRAY_FIELDS_MODEL,
+                                   SEB_NOT_TABLES_FOUND, SEPARATOR_CHAR)
+from seb_openedx.edxapp_wrapper.get_configuration_helpers import \
+    get_configuration_helpers
+from seb_openedx.edxapp_wrapper.get_course_module import (
+    get_course_module, modulestore_update_item)
 from seb_openedx.models import SebCourseConfiguration
-from seb_openedx.edxapp_wrapper.get_course_module import get_course_module, modulestore_update_item
-from seb_openedx.edxapp_wrapper.get_configuration_helpers import get_configuration_helpers
 
 LOG = logging.getLogger(__name__)
 
@@ -39,8 +44,8 @@ def from_other_course_settings(course_key):
     if hasattr(course_module, 'other_course_settings'):
         other_settings = course_module.other_course_settings
         other_settings = other_settings.get('SAFE_EXAM_BROWSER', {})
-        if six.text_type(course_key) in other_settings:
-            return other_settings.get(six.text_type(course_key), None)
+        if str(course_key) in other_settings:
+            return other_settings.get(str(course_key), None)
         if other_settings:
             return other_settings
     return None
@@ -83,7 +88,7 @@ def from_global_settings(course_key):
     }
     """
     if hasattr(settings, 'SAFE_EXAM_BROWSER'):
-        return settings.SAFE_EXAM_BROWSER.get(six.text_type(course_key), None)
+        return settings.SAFE_EXAM_BROWSER.get(str(course_key), None)
     return None
 
 
@@ -94,7 +99,7 @@ def from_site_configuration(course_key):
     configuration_helpers = get_configuration_helpers()
     if configuration_helpers.has_override_value('SAFE_EXAM_BROWSER'):
         keys_dict = configuration_helpers.get_configuration_value('SAFE_EXAM_BROWSER')
-        return keys_dict.get(six.text_type(course_key), None)
+        return keys_dict.get(str(course_key), None)
     return None
 
 
@@ -108,7 +113,7 @@ def to_django_model(course_key, config, **kwargs):
         try:
             SebCourseConfiguration.objects.get(course_id=course_key).delete()
         except SebCourseConfiguration.DoesNotExist:
-            LOG.info('seb_plugin: there is no configuration for this course %s', six.text_type(course_key))
+            LOG.info('seb_plugin: there is no configuration for this course %s', str(course_key))
             return False
         except ProgrammingError:
             LOG.warning(SEB_NOT_TABLES_FOUND)
@@ -134,7 +139,7 @@ def to_site_configuration(course_key, config, **kwargs):
     Set SEB keys on djangoapps.site_configuration.
     Replaces existing configuration
     """
-    course_id = six.text_type(course_key)
+    course_id = str(course_key)
 
     site_configuration = get_configuration_helpers().get_current_site_configuration()
 

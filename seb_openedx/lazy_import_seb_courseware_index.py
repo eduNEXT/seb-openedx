@@ -1,6 +1,9 @@
 """ Lazy load of SebCoursewareIndex to avoid errors on CMS """
 
 
+from __future__ import absolute_import
+
+
 class LazyImportSebCoursewareIndex(object):
     """ Static class LazyImportSebCoursewareIndex """
     _cached = None
