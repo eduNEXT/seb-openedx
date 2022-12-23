@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """The generic views for the exc-core plugin project"""
 
-from __future__ import unicode_literals
-from opaque_keys.edx.keys import CourseKey
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
-from django.views.generic import TemplateView
+from __future__ import absolute_import, unicode_literals
+
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
-from seb_openedx.user_banning import ban_user, unban_user, get_all_banning_data
+from django.views.generic import TemplateView
+from opaque_keys.edx.keys import CourseKey
+from seb_openedx.user_banning import ban_user, get_all_banning_data, unban_user
 
 
 class TableView(TemplateView):  # pylint: disable=too-many-ancestors

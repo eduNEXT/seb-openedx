@@ -1,5 +1,9 @@
 """ SebCoursewareIndex """
-from seb_openedx.edxapp_wrapper.get_courseware_index_view import get_courseware_index_view
+from __future__ import absolute_import
+
+from seb_openedx.edxapp_wrapper.get_courseware_index_view import \
+    get_courseware_index_view
+
 CoursewareIndex = get_courseware_index_view()  # pylint: disable=invalid-name
 
 

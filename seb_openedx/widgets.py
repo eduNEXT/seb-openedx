@@ -2,7 +2,10 @@
 """
 Widgets for seb-openedx forms.
 """
+from __future__ import absolute_import
+
 from django.forms.widgets import Widget
+
 from seb_openedx.constants import SEPARATOR_CHAR
 
 

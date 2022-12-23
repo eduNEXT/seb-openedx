@@ -2,9 +2,12 @@
 """
 Forms for seb-openedx.
 """
+from __future__ import absolute_import
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from seb_openedx.constants import SEPARATOR_CHAR, SEB_ARRAY_FIELDS_MODEL
+
+from seb_openedx.constants import SEB_ARRAY_FIELDS_MODEL, SEPARATOR_CHAR
 from seb_openedx.models import SebCourseConfiguration
 
 

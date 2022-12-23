@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 """ Permissions as classes """
+from __future__ import absolute_import
+
 import abc
 import hashlib
 import logging
-from django.utils import six
-from django.conf import settings
-from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources, get_config_by_course
 
+from django.conf import settings
+
+from seb_openedx.seb_keys_sources import (get_config_by_course,
+                                          get_ordered_seb_keys_sources)
 
 LOG = logging.getLogger(__name__)
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Permission(object):
+class Permission(object, metaclass=abc.ABCMeta):
     """ Abstract class Permision """
     @abc.abstractmethod
     def check(self, request, course_key, masquerade=None):
