@@ -1,4 +1,4 @@
-name: CI
+name: python36
 
 # Enable Buildkit and let compose use it to speed up image building
 env:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: "3.8"
+          python-version: "3.6.15"
           cache: pip
           cache-dependency-path: |
             requirements.txt
