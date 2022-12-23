@@ -21,9 +21,9 @@ class TestMiddleware(TestCase):
     """ Tests for the seb-open-edx page """
     def setUp(self):
         """ setup """
-        super(TestMiddleware, self).setUp()
+        super().setUp()
         course_key_pattern = r'(?P<course_key_string>[^/+]+(/|\+)[^/+]+(/|\+)[^/?]+)'
-        self.url_pattern = r'^v1/courses/{}'.format(course_key_pattern)
+        self.url_pattern = f'^v1/courses/{course_key_pattern}'
         self.factory = RequestFactory()
         self.seb_middleware = SecureExamBrowserMiddleware()
         self.view = lambda course_key_string: None
@@ -65,7 +65,7 @@ class TestMiddleware(TestCase):
         m_import.assert_called_with(settings.SEB_COURSE_MODULE)
 
 
-class FakeModuleForSebkeysTesting(object):
+class FakeModuleForSebkeysTesting:
     """ Fake module for sebkeys middleware testing """
     other_course_settings = {"seb_keys": ["FAKE_SEB_KEY"]}
 

@@ -18,7 +18,7 @@ class ListWidget(Widget):
 
     def get_context(self, name, value, attrs):
         """
-        Format the values ​​before sending them to the template.
+        Format the values before sending them to the template.
         """
         try:
             value = value.split(SEPARATOR_CHAR)

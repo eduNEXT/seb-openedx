@@ -34,7 +34,7 @@ class SebCourseConfigurationAdmin(admin.ModelAdmin):
 
     def get_search_results(self, request, queryset, search_term):
         """Add the filter to search by config_keys and browser_keys."""
-        queryset, use_distinct = super(SebCourseConfigurationAdmin, self).get_search_results(
+        queryset, use_distinct = super().get_search_results(
             request,
             queryset,
             search_term

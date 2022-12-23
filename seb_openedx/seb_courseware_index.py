@@ -18,7 +18,7 @@ class SebCoursewareIndex(CoursewareIndex):
 
     def _create_courseware_context(self, *args, **kwargs):
         """ Overriding method (but still calling the overwritten one) """
-        result = super(SebCoursewareIndex, self)._create_courseware_context(*args, **kwargs)
+        result = super()._create_courseware_context(*args, **kwargs)
         if self.__class__.fragment:
             result['fragment'] = self.__class__.fragment
         self._context = result  # pylint: disable=attribute-defined-outside-init

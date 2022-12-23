@@ -16,7 +16,7 @@ class TestUserBanning(TestCase):
     def setUp(self):
         """ Setup """
         course_key_pattern = r'(?P<course_key_string>[^/+]+(/|\+)[^/+]+(/|\+)[^/?]+)'
-        self.url_pattern = r'^v1/courses/{}'.format(course_key_pattern)
+        self.url_pattern = f'^v1/courses/{course_key_pattern}'
         self.seb_middleware = SecureExamBrowserMiddleware()
         self.factory = RequestFactory()
         self.view = lambda course_key_string: None

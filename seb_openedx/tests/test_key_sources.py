@@ -14,7 +14,7 @@ class TestKeySource(TestCase):
     """
     def setUp(self):
         """Inital configuration settings."""
-        super(TestKeySource, self).setUp()
+        super().setUp()
         self.config_example = {
             'PERMISSION_COMPONENTS': ['AlwaysAllowStaff', 'CheckSEBHashBrowserExamKey', 'CheckSEBHashConfigKey'],
             'BLACKLIST_CHAPTERS': [],

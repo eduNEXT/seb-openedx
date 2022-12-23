@@ -19,9 +19,8 @@ def get_courseware_module():
 
 def get_courseware_index_view():
     """ helper for settings.test fake backend """
-    class Dummy(object):
-        """ Dummy class """
-        pass
+    class Dummy:
+        """ Dummy class """        
     return Dummy
 
 
