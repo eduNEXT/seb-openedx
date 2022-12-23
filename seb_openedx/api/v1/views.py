@@ -5,6 +5,7 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from opaque_keys.edx.keys import CourseKey
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -12,7 +13,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_oauth.authentication import OAuth2Authentication
+
 from seb_openedx.api.v1.serializers import SebConfigurationSerializer
 from seb_openedx.seb_keys_sources import (get_config_by_course,
                                           save_course_config)
