@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 from django.conf import settings
 from django.db import models
-from django.utils import six
 from opaque_keys.edx.django.models import CourseKeyField
 from seb_openedx.constants import SEPARATOR_CHAR
 
@@ -60,9 +59,9 @@ class SebCourseConfiguration(models.Model):
         """Meta."""
         app_label = 'seb_openedx'
 
-    def __unicode__(self):
+    def __str__(self):
         """Formats impression of object."""
-        return six.text_type(self.course_id)
+        return str(self.course_id)
 
     @classmethod
     def get_as_dict_by_course_id(cls, course_id):
