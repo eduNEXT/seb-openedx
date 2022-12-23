@@ -2,14 +2,20 @@
 SEB KEYS FETCHING
 Available functions that can be used to fetch Secure Exam Browser keys
 """
+from __future__ import absolute_import
+
 import logging
 
 from django.conf import settings
 from django.db.utils import ProgrammingError
-from seb_openedx.constants import SEPARATOR_CHAR, SEB_NOT_TABLES_FOUND, SEB_ARRAY_FIELDS_MODEL
+
+from seb_openedx.constants import (SEB_ARRAY_FIELDS_MODEL,
+                                   SEB_NOT_TABLES_FOUND, SEPARATOR_CHAR)
+from seb_openedx.edxapp_wrapper.get_configuration_helpers import \
+    get_configuration_helpers
+from seb_openedx.edxapp_wrapper.get_course_module import (
+    get_course_module, modulestore_update_item)
 from seb_openedx.models import SebCourseConfiguration
-from seb_openedx.edxapp_wrapper.get_course_module import get_course_module, modulestore_update_item
-from seb_openedx.edxapp_wrapper.get_configuration_helpers import get_configuration_helpers
 
 LOG = logging.getLogger(__name__)
 

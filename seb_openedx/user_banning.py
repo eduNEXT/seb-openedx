@@ -1,7 +1,11 @@
 """ Banned users handling module """
+from __future__ import absolute_import
+
 import abc
 from datetime import datetime
+
 from django.conf import settings
+
 from seb_openedx.models import ForbiddenCourseAccess
 from seb_openedx.seb_keys_sources import get_config_by_course
 

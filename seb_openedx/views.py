@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """The generic views for the exc-core plugin project"""
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 from os.path import dirname, realpath
-from subprocess import check_output, CalledProcessError
+from subprocess import CalledProcessError, check_output
 
-from django.http import JsonResponse
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 
 import seb_openedx
 from seb_openedx import middleware
