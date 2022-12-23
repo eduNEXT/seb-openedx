@@ -17,7 +17,7 @@ def info_view(request):
     Basic view to show the working version and the exact git commit of the
     installed app
     """
-    if request.user.is_authenticated() and request.user.is_staff:
+    if request.user.is_authenticated and request.user.is_staff:
         try:
             working_dir = dirname(realpath(__file__))
             git_data = str(check_output(["git", "rev-parse", "HEAD"], cwd=working_dir))
