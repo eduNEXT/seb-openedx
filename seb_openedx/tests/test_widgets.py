@@ -11,7 +11,7 @@ class TestListWidget(TestCase):
     """Test the functionality of the ListWidget class."""
 
     def test_template_values(self):
-        """Must be return a list with the values ​​to the template."""
+        """Must be return a list with the values to the template."""
         name = 'text_field_input'
         value = SEPARATOR_CHAR.join(['key1', 'key2', 'key3'])
         list_widget = ListWidget().get_context(name=name, value=value, attrs={})

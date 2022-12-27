@@ -1,10 +1,5 @@
 name: CI
 
-# Enable Buildkit and let compose use it to speed up image building
-env:
-  DOCKER_BUILDKIT: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
-
 on:
   pull_request:
     branches: [ "*" ]
@@ -20,8 +15,11 @@ concurrency:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    strategy: 
+      matrix:
+        python-version: ['3.8', '3.6']
 
+    runs-on: ubuntu-20.04
     steps:
 
       - name: Checkout Code Repository
@@ -30,10 +28,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: "3.8"
-          cache: pip
-          cache-dependency-path: |
-            requirements.txt
+          python-version: ${{matrix.version}}
 
       - name: Install dependencies
         run: |
@@ -47,5 +42,5 @@ jobs:
 
       - name: Run quality analysis
         run: |
+          pylint --exit-zero seb_openedx
           pycodestyle seb_openedx
-          pylint seb_openedx

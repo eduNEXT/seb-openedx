@@ -14,12 +14,11 @@ from seb_openedx.seb_keys_sources import (get_config_by_course,
 LOG = logging.getLogger(__name__)
 
 
-class Permission(object, metaclass=abc.ABCMeta):
+class Permission(metaclass=abc.ABCMeta):
     """ Abstract class Permision """
     @abc.abstractmethod
     def check(self, request, course_key, masquerade=None):
         """ Abstract method check """
-        pass
 
 
 class AlwaysAllowStaff(Permission):
@@ -33,7 +32,7 @@ class AlwaysAllowStaff(Permission):
         return False
 
 
-class CheckSEBHash(object):
+class CheckSEBHash:
     """ Mixin to implement the hash checking """
 
     def get_seb_keys(self, course_key):

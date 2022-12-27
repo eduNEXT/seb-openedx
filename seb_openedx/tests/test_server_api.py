@@ -11,7 +11,7 @@ class TestServerAPI(TestCase):
     """ Tests for the seb-open-edx page """
     def setUp(self):
         """ setup """
-        super(TestServerAPI, self).setUp()
+        super().setUp()
         self.api_user = User('test', 'test@example.com', 'test', is_staff=True)
         self.client = APIClient()
         self.client.force_authenticate(user=self.api_user)
@@ -23,8 +23,7 @@ class TestServerAPI(TestCase):
     def test_api_get(self):
         """ Test that the GET method works under normal conditions """
         course_id = 'course-v1:seb+course+run'
-        response = self.client.get('/api/v1/course/{}/configuration/'.format(course_id))
-
+        response = self.client.get(f'/api/v1/course/{course_id}/configuration/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data.get('BROWSER_KEYS')[0], 'original')
 
@@ -32,7 +31,7 @@ class TestServerAPI(TestCase):
     def test_api_get_not_found(self):
         """ Test that GET on an unexistant course returns 404 """
         course_id = 'course-v1:seb+course+run'
-        response = self.client.get('/api/v1/course/{}/configuration/'.format(course_id))
+        response = self.client.get(f'/api/v1/course/{course_id}/configuration/')
         self.assertEqual(response.status_code, 404)
 
     @patch('seb_openedx.api.v1.views.get_config_by_course', Mock(return_value={}))
@@ -40,7 +39,7 @@ class TestServerAPI(TestCase):
     def test_api_post(self, m_save_course_config):
         """ Test that POST works under normal conditions """
         course_id = 'course-v1:seb+course+run'
-        response = self.client.post('/api/v1/course/{}/configuration/'.format(course_id), {})
+        response = self.client.post(f'/api/v1/course/{course_id}/configuration/', {})
 
         m_save_course_config.assert_called_once()
         self.assertEqual(response.status_code, 200)
@@ -50,7 +49,7 @@ class TestServerAPI(TestCase):
     def test_api_post_found(self, m_save_course_config):
         """ Test POSTing to an existing key fails """
         course_id = 'course-v1:seb+course+run'
-        response = self.client.post('/api/v1/course/{}/configuration/'.format(course_id), {})
+        response = self.client.post(f'/api/v1/course/{course_id}/configuration/', {})
 
         m_save_course_config.assert_not_called()
         self.assertEqual(response.status_code, 422)
@@ -61,7 +60,7 @@ class TestServerAPI(TestCase):
         """ Test that PUT works on normal conditions """
         course_id = 'course-v1:seb+course+run'
         payload = {'BROWSER_KEYS': ['updated']}
-        response = self.client.put('/api/v1/course/{}/configuration/'.format(course_id), payload)
+        response = self.client.put(f'/api/v1/course/{course_id}/configuration/', payload)
 
         m_save_course_config.assert_called_once()
         self.assertEqual(m_save_course_config.call_args[0][1]['BROWSER_KEYS'], ['updated'])
@@ -74,7 +73,7 @@ class TestServerAPI(TestCase):
         course_id = 'course-v1:seb+course+run'
         m_get_config_by_course.return_value = {"BROWSER_KEYS": ["original"]}
 
-        response = self.client.patch('/api/v1/course/{}/configuration/'.format(course_id), {"CONFIG_KEYS": ["updated"]})
+        response = self.client.patch(f'/api/v1/course/{course_id}/configuration/', {"CONFIG_KEYS": ["updated"]})
 
         m_save_course_config.assert_called_once()
         m_get_config_by_course.assert_called_once()
@@ -87,7 +86,7 @@ class TestServerAPI(TestCase):
         course_id = 'course-v1:seb+course+run'
         m_get_config_by_course.return_value = {}
 
-        response = self.client.delete('/api/v1/course/{}/configuration/'.format(course_id))
+        response = self.client.delete(f'/api/v1/course/{course_id}/configuration/')
 
         m_save_course_config.assert_called_once_with(ANY, None, user_id=ANY)
         m_get_config_by_course.assert_called_once()

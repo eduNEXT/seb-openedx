@@ -5,7 +5,7 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication  # pylint disable=import-error
 from opaque_keys.edx.keys import CourseKey
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication

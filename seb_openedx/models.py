@@ -25,9 +25,9 @@ class ForbiddenCourseAccess(models.Model):
 
     def __unicode__(self):
         """ Nice printing """
-        return "{} at {}".format(self.username, self.course_id)
+        return f"{self.username} at {self.course_id}"
 
-    class Meta(object):
+    class Meta:
         """ Meta """
         unique_together = ('username', 'course_id')
         app_label = 'seb_openedx'
@@ -57,7 +57,7 @@ class SebCourseConfiguration(models.Model):
         default=get_default_array_value(getattr(settings, 'SEB_WHITELIST_PATHS', [])),
     )
 
-    class Meta(object):
+    class Meta:
         """Meta."""
         app_label = 'seb_openedx'
 
@@ -69,11 +69,11 @@ class SebCourseConfiguration(models.Model):
     def get_as_dict_by_course_id(cls, course_id):
         """Get config by course_id."""
         instance = cls.objects.get(course_id=course_id)
-        permission_components = list([_f for _f in instance.permission_components.split(SEPARATOR_CHAR) if _f])
-        browser_keys = list([_f for _f in instance.browser_keys.split(SEPARATOR_CHAR) if _f])
-        config_keys = list([_f for _f in instance.config_keys.split(SEPARATOR_CHAR) if _f])
-        blacklist_chapters = list([_f for _f in instance.blacklist_chapters.split(SEPARATOR_CHAR) if _f])
-        whitelist_paths = list([_f for _f in instance.whitelist_paths.split(SEPARATOR_CHAR) if _f])
+        permission_components = [_f for _f in instance.permission_components.split(SEPARATOR_CHAR) if _f]
+        browser_keys = [_f for _f in instance.browser_keys.split(SEPARATOR_CHAR) if _f]
+        config_keys = [_f for _f in instance.config_keys.split(SEPARATOR_CHAR) if _f]
+        blacklist_chapters = [_f for _f in instance.blacklist_chapters.split(SEPARATOR_CHAR) if _f]
+        whitelist_paths = [_f for _f in instance.whitelist_paths.split(SEPARATOR_CHAR) if _f]
         return {
             'PERMISSION_COMPONENTS': permission_components,
             'BROWSER_KEYS': browser_keys,

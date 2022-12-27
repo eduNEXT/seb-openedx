@@ -67,28 +67,24 @@ def get_all_banning_data():
     return _get_back_end().get_all_banning_data()
 
 
-class BannedUsersBackend(object, metaclass=abc.ABCMeta):
+class BannedUsersBackend(metaclass=abc.ABCMeta):
     """ Abstract BannedUserBackend class """
 
     @abc.abstractmethod
     def is_user_banned(self, username, course_key):
         """ is_user_banned abstract method """
-        pass
 
     @abc.abstractmethod
     def ban_user(self, username, course_key, last_modified_time, banned_by):
         """ is_user_banned abstract method """
-        pass
 
     @abc.abstractmethod
     def unban_user(self, username, course_key, last_modified_time, unbanned_by):
         """ is_user_banned abstract method """
-        pass
 
     @abc.abstractmethod
     def get_all_banning_data(self):
         """ get_all_banning_data abstract method """
-        pass
 
 
 class DatabaseBannedUsersBackend(BannedUsersBackend):
