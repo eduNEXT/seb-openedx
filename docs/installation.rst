@@ -363,6 +363,64 @@ For manually managed installations install again with the same steps as before a
 
 As before, you can navigate to https://<yourdomain>/seb-openedx/seb-info as a superuser to find the exact version that is running on the platform.
 
+Tutor
+=====
+
+`Tutor <https://docs.tutor.overhang.io>`_ is a free, open source, docker-based Open edX distribution, both for production and local development. Tutor makes it easy to deploy, customize, upgrade and scale Open edX platform. It is reliable, fast, extensible, and it is already used by hundreds of Open edX platforms around the world.
+
+#. Configure the tutor environment, if you want to know more about how to run tutor in a productive environment you can review the following article `Local deployment <https://docs.tutor.overhang.io/local.html>`_
+
+#. After creating the configuration file *config.yml* you must add an ``OPENEDX_EXTRA_PIP_REQUIREMENTS`` to install the *seb-openedx* plugin by adding the following code snippet at the end of that file.
+
+    .. code-block:: yaml
+
+        OPENEDX_EXTRA_PIP_REQUIREMENTS:
+        - "git+https://github.com/eduNEXT/seb-openedx.git"
+
+#. Once you have added the above configuration you should proceed to build the openedx image again.
+
+    .. code-block:: shell
+
+        tutor images build openedx
+
+#. When the image has finished its construction we can proceed to run the respective migrations.
+
+    .. code-block:: shell
+
+        tutor local init
+
+#. With the migrations done we must proceed to create a tutor yaml plugin, which will be responsible for configuring the ``seb_openedx.middleware.SecureExamBrowserMiddleware`` middleware, for this we can follow the following article `YAML file <https://docs.tutor.overhang.io/plugins/v0/gettingstarted. html#getting-started-with-plugin-development>`_, the plugin structure should go as follows and must be saved in the plugins folder of our installation, to know which is the path to the root folder of our plugins we must type the following command ``$(tutor plugins printroot)``.
+
+    .. code-block:: yaml
+
+        name: seb-backend-plugin
+        version: 0.1.0
+        patches:
+            openedx-common-settings: |
+                MIDDLEWARE.append("seb_openedx.middleware.SecureExamBrowserMiddleware")
+
+            common-env-features: |
+                ENABLE_OTHER_COURSE_SETTINGS: true
+
+#. To check if the plugin is correctly saved, you can view the list of plugins that have been created.
+
+    .. code-block:: shell
+
+        tutor plugins list
+
+#. Do not forget to run the following commands after saving the plugin in the plugins folder to activate the plguin.
+
+    .. code-block:: shell
+
+        tutor plugins enable seb-backend-plugin
+        tutor config save
+
+#. Finally we can proceed to update our services with all the changes we made.
+
+    .. code-block:: shell
+    
+        tutor local dc down
+        tutor local start -d
 
 Other Distributions
 ===================
