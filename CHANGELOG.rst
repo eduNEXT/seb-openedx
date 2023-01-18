@@ -20,17 +20,18 @@ Unreleased
 Added
 _____
 
-* Added support to Koa to Olive.
+* Added support from Koa to Olive.
+* Added support for python 3.6 and 3.8.
 * Added new backends for Nutmeg.
 * Added new CI using Github Actions with python 3.6 and 3.8.
 
 Removed
--------
+_______
 
 * Removed support for python 2.7.
 * Removed the previous CI (CircleCI).
 
 Fixed
------
+_____
 
 * Fixed test dependencies for Nutmeg.
