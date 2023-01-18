@@ -1,7 +1,5 @@
-
-.. image:: https://circleci.com/gh/eduNEXT/seb-openedx.svg?style=shield
-    :target: https://circleci.com/gh/eduNEXT/seb-openedx
-    :alt: Build Status (CircleCI)
+.. |Python CI| image:: https://github.com/eduNEXT/seb-openedx/actions/workflows/ci.yml/badge.svg
+  :target: https://github.com/eduNEXT/seb-openedx/actions/workflows/ci.yml
 
 
 What is Safe Exam Browser (SEB)?
