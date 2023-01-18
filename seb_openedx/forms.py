@@ -2,9 +2,12 @@
 """
 Forms for seb-openedx.
 """
+from __future__ import absolute_import
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from seb_openedx.constants import SEPARATOR_CHAR, SEB_ARRAY_FIELDS_MODEL
+
+from seb_openedx.constants import SEB_ARRAY_FIELDS_MODEL, SEPARATOR_CHAR
 from seb_openedx.models import SebCourseConfiguration
 
 
@@ -25,20 +28,20 @@ class SebCourseConfigurationForm(forms.ModelForm):
             'whitelist_paths',
         ]
         help_texts = {
-            'permission_components': _("""Add a list of permmission components class ​​separated by linebreak e.g:<br><br>
+            'permission_components': _("""Add a list of permmission components class separated by linebreak e.g:<br><br>
                                        AlwaysAllowStaff <br>
                                        CheckSEBHashBrowserExamKey <br>
                                        CheckSEBHashConfigKey"""),
-            'browser_keys': _("""Add a list of browser keys ​​separated by linebreak e.g:<br><br>
+            'browser_keys': _("""Add a list of browser keys separated by linebreak e.g:<br><br>
                                        cd8827e4555e4eef82........5088a4bd5c9887f32e590 <br>
                                        ddd3f148d87776a571........dea39931ec8ea1b2bca21"""),
-            'config_keys': _("""Add a list of config keys ​​separated by linebreak e.g:<br><br>
+            'config_keys': _("""Add a list of config keys separated by linebreak e.g:<br><br>
                                        cd8827e4555e4eef82........5088a4bd5c9887f32e590 <br>
                                        ddd3f148d87776a571........dea39931ec8ea1b2bca21"""),
-            'blacklist_chapters': _("""Add a list of chapters ​​separated by linebreak e.g:<br><br>
+            'blacklist_chapters': _("""Add a list of chapters separated by linebreak e.g:<br><br>
                                        e87b8744ea3949989f8aa113ad428515 <br>
                                        33aa125724414ad090a1842ec244e11e"""),
-            'whitelist_paths': _("""Add a list of paths ​​separated by linebreak e.g:<br><br>
+            'whitelist_paths': _("""Add a list of paths separated by linebreak e.g:<br><br>
                                     about <br>
                                     course-outline <br>
                                     courseware <br>

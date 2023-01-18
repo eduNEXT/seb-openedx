@@ -1,8 +1,11 @@
 """ Banned users handling module """
+from __future__ import absolute_import
+
 import abc
 from datetime import datetime
+
 from django.conf import settings
-from django.utils import six
+
 from seb_openedx.models import ForbiddenCourseAccess
 from seb_openedx.seb_keys_sources import get_config_by_course
 
@@ -64,29 +67,24 @@ def get_all_banning_data():
     return _get_back_end().get_all_banning_data()
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BannedUsersBackend(object):
+class BannedUsersBackend(metaclass=abc.ABCMeta):
     """ Abstract BannedUserBackend class """
 
     @abc.abstractmethod
     def is_user_banned(self, username, course_key):
         """ is_user_banned abstract method """
-        pass
 
     @abc.abstractmethod
     def ban_user(self, username, course_key, last_modified_time, banned_by):
         """ is_user_banned abstract method """
-        pass
 
     @abc.abstractmethod
     def unban_user(self, username, course_key, last_modified_time, unbanned_by):
         """ is_user_banned abstract method """
-        pass
 
     @abc.abstractmethod
     def get_all_banning_data(self):
         """ get_all_banning_data abstract method """
-        pass
 
 
 class DatabaseBannedUsersBackend(BannedUsersBackend):

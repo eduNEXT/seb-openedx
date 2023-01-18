@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """ Admin.py """
+from __future__ import absolute_import
+
 from django.contrib import admin
-from django.db.models import TextField, Q
+from django.db.models import Q, TextField
+
 from seb_openedx.constants import SEPARATOR_CHAR
 from seb_openedx.forms import SebCourseConfigurationForm
-from seb_openedx.models import (
-    ForbiddenCourseAccess,
-    SebCourseConfiguration,
-)
+from seb_openedx.models import ForbiddenCourseAccess, SebCourseConfiguration
 from seb_openedx.widgets import ListWidget
 
 MAX_CHAR_KEYS = 7
@@ -34,7 +34,7 @@ class SebCourseConfigurationAdmin(admin.ModelAdmin):
 
     def get_search_results(self, request, queryset, search_term):
         """Add the filter to search by config_keys and browser_keys."""
-        queryset, use_distinct = super(SebCourseConfigurationAdmin, self).get_search_results(
+        queryset, use_distinct = super().get_search_results(
             request,
             queryset,
             search_term

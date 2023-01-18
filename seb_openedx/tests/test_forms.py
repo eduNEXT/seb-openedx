@@ -11,7 +11,7 @@ class TestSebCourseConfigurationForm(TestCase):
     """Test the form SebCourseConfigurationForm."""
     def setUp(self):
         """setUp."""
-        super(TestSebCourseConfigurationForm, self).setUp()
+        super().setUp()
         self.form_data = {
             'course_id': 'course-v1:edX+DemoX+Demo_Course',
             'permission_components': 'key1\r\nkey2\r\nkey3'

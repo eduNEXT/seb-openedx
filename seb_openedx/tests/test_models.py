@@ -11,7 +11,7 @@ class TestSebCourseConfiguration(TestCase):
 
     def setUp(self):
         """setUp."""
-        super(TestSebCourseConfiguration, self).setUp()
+        super().setUp()
         self.seb_course_configuration = get_seb_configuration_instance()
 
     def test_get_as_dict_by_course_id(self):

@@ -7,9 +7,8 @@ from __future__ import absolute_import, unicode_literals
 from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
 
-class SettingsClass(object):
+class SettingsClass:
     """ dummy settings class """
-    pass
 
 
 DEBUG = True

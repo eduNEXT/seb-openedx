@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 """ Permissions as classes """
+from __future__ import absolute_import
+
 import abc
 import hashlib
 import logging
-from django.utils import six
-from django.conf import settings
-from seb_openedx.seb_keys_sources import get_ordered_seb_keys_sources, get_config_by_course
 
+from django.conf import settings
+
+from seb_openedx.seb_keys_sources import (get_config_by_course,
+                                          get_ordered_seb_keys_sources)
 
 LOG = logging.getLogger(__name__)
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Permission(object):
+class Permission(metaclass=abc.ABCMeta):
     """ Abstract class Permision """
     @abc.abstractmethod
     def check(self, request, course_key, masquerade=None):
         """ Abstract method check """
-        pass
 
 
 class AlwaysAllowStaff(Permission):
@@ -26,12 +27,12 @@ class AlwaysAllowStaff(Permission):
         """ check """
         if masquerade and masquerade.role != 'staff':
             return False
-        if hasattr(request, 'user') and request.user.is_authenticated() and request.user.is_staff:
+        if hasattr(request, 'user') and request.user.is_authenticated and request.user.is_staff:
             return True
         return False
 
 
-class CheckSEBHash(object):
+class CheckSEBHash:
     """ Mixin to implement the hash checking """
 
     def get_seb_keys(self, course_key):
