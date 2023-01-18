@@ -122,7 +122,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         }
 
         views_module = inspect.getmodule(request.resolver_match.func).__name__
-        paths_matched = [aliases[key] for key in aliases if views_module.startswith(key)]
+        paths_matched = [value for key, value in aliases.items() if views_module.startswith(key)]
         alias_current_path = paths_matched[0] if paths_matched else None
         whitelist_paths = config.get('WHITELIST_PATHS', [])
 

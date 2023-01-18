@@ -54,7 +54,7 @@ class SebConfiguration(APIView):
         course_key = CourseKey.from_string(course_id)
         if get_config_by_course(course_key):
             return Response(
-                "{} already has a SEB configuration. Use PUT to update.".format(course_id),
+                f"{course_id} already has a SEB configuration. Use PUT to update.",
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
 

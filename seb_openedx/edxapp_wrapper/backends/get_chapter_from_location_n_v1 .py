@@ -1,4 +1,4 @@
-""" Backend abstraction """
+""" Backend abstraction """  # pylint: disable=invalid-name
 from opaque_keys.edx.keys import UsageKey
 from openedx.core.lib.url_utils import unquote_slashes  # pylint: disable=import-error
 from xmodule.modulestore.django import modulestore  # pylint: disable=import-error

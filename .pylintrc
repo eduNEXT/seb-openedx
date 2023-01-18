@@ -5,4 +5,5 @@ disable=
 	too-few-public-methods,
 	fixme,
 	line-too-long,
-	no-member
+	no-member,
+	duplicate-code,
