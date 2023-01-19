@@ -39,6 +39,10 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         if self.get_view_path(request) == 'courseware.masquerade':
             return None
 
+        # Whitelist API endpoints except course_metadata
+        if request.path.startswith('/api/') and self.get_view_path(request) != 'lms.djangoapps.course_home_api.course_metadata.views':
+            return None
+
         if course_key:
             # By default is all denied
             access_denied = True
@@ -104,6 +108,16 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
     # pylint: disable=too-many-arguments
     def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, context, user_name):
         """ handle what to return and do when access denied """
+        if self.get_view_path(request) == 'lms.djangoapps.course_home_api.course_metadata.views':
+            response = view_func(request, *view_args, **view_kwargs)
+            response.data.update({
+                "course_access": {
+                    "has_access": False,
+                    "error_code": "audit_expired",
+                    "additional_context_user_message": "Please use Safe Exam Browser to access this course."
+                }
+            })
+            return response
         is_banned, new_ban = ban_user(user_name, course_key, request.user.username)
         is_courseware_view = bool(view_func.__name__ == get_courseware_index_view().__name__)
         context.update({"banned": is_banned, "is_new_ban": new_ban})
