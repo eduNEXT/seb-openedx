@@ -1,6 +1,9 @@
+
+| |Python CI|
+
 .. |Python CI| image:: https://github.com/eduNEXT/seb-openedx/actions/workflows/ci.yml/badge.svg
   :target: https://github.com/eduNEXT/seb-openedx/actions/workflows/ci.yml
-
+  :alt: Build status Github Actions
 
 What is Safe Exam Browser (SEB)?
 ================================
