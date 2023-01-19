@@ -21,6 +21,8 @@ from seb_openedx.seb_keys_sources import get_config_by_course
 
 LOG = logging.getLogger(__name__)
 
+COURSE_METADATA_PATH = 'lms.djangoapps.course_home_api.course_metadata.views'
+
 
 class SecureExamBrowserMiddleware(MiddlewareMixin):
     """ Middleware for seb_openedx """
@@ -40,7 +42,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             return None
 
         # Whitelist API endpoints except course_metadata
-        if request.path.startswith('/api/') and self.get_view_path(request) != 'lms.djangoapps.course_home_api.course_metadata.views':
+        if request.path.startswith('/api/') and self.get_view_path(request) != COURSE_METADATA_PATH:
             return None
 
         if course_key:
@@ -108,7 +110,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
     # pylint: disable=too-many-arguments
     def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, context, user_name):
         """ handle what to return and do when access denied """
-        if self.get_view_path(request) == 'lms.djangoapps.course_home_api.course_metadata.views':
+        if self.get_view_path(request) == COURSE_METADATA_PATH:
             response = view_func(request, *view_args, **view_kwargs)
             response.data.update({
                 "course_access": {
