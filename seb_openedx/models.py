@@ -48,14 +48,6 @@ class SebCourseConfiguration(models.Model):
     user_banning_enabled = models.BooleanField(
         default=getattr(settings, 'SEB_USER_BANNING_ENABLED', False),
     )
-    blacklist_chapters = models.TextField(
-        blank=True,
-        default=get_default_array_value(getattr(settings, 'SEB_BLACKLIST_CHAPTERS', [])),
-    )
-    whitelist_paths = models.TextField(
-        blank=True,
-        default=get_default_array_value(getattr(settings, 'SEB_WHITELIST_PATHS', [])),
-    )
 
     class Meta:
         """Meta."""
@@ -72,13 +64,9 @@ class SebCourseConfiguration(models.Model):
         permission_components = [_f for _f in instance.permission_components.split(SEPARATOR_CHAR) if _f]
         browser_keys = [_f for _f in instance.browser_keys.split(SEPARATOR_CHAR) if _f]
         config_keys = [_f for _f in instance.config_keys.split(SEPARATOR_CHAR) if _f]
-        blacklist_chapters = [_f for _f in instance.blacklist_chapters.split(SEPARATOR_CHAR) if _f]
-        whitelist_paths = [_f for _f in instance.whitelist_paths.split(SEPARATOR_CHAR) if _f]
         return {
             'PERMISSION_COMPONENTS': permission_components,
             'BROWSER_KEYS': browser_keys,
             'CONFIG_KEYS': config_keys,
             'USER_BANNING_ENABLED': instance.user_banning_enabled,
-            'BLACKLIST_CHAPTERS': blacklist_chapters,
-            'WHITELIST_PATHS': whitelist_paths,
         }

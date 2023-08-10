@@ -10,8 +10,6 @@ from django.test.utils import override_settings
 from seb_openedx.middleware import SecureExamBrowserMiddleware
 
 
-@patch.object(SecureExamBrowserMiddleware, 'is_whitelisted_view', Mock(return_value=False))
-@patch.object(SecureExamBrowserMiddleware, 'is_blacklisted_chapter', Mock(return_value=True))
 @patch.object(SecureExamBrowserMiddleware, 'handle_masquerade', Mock(return_value=(None, None, {})))
 @patch('seb_openedx.middleware.get_config_by_course', Mock(return_value={}))
 @patch('seb_openedx.middleware.is_user_banned', Mock(return_value=False))

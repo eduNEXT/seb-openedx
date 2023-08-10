@@ -31,7 +31,5 @@ def get_seb_configuration_instance():
         permission_components=SEPARATOR_CHAR.join(['AlwaysAllowStaff', 'CheckSEBHashBrowserExamKeyOrConfigKey']),
         browser_keys=SEPARATOR_CHAR.join(['browser_key1', 'browser_key2']),
         config_keys=SEPARATOR_CHAR.join(['config_key1', 'config_key2']),
-        user_banning_enabled=False,
-        blacklist_chapters='',
-        whitelist_paths=''
+        user_banning_enabled=False
     )

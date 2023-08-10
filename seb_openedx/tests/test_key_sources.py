@@ -17,11 +17,9 @@ class TestKeySource(TestCase):
         super().setUp()
         self.config_example = {
             'PERMISSION_COMPONENTS': ['AlwaysAllowStaff', 'CheckSEBHashBrowserExamKey', 'CheckSEBHashConfigKey'],
-            'BLACKLIST_CHAPTERS': [],
             'CONFIG_KEYS': [],
             'BROWSER_KEYS': [],
             'USER_BANNING_ENABLED': False,
-            'WHITELIST_PATHS': ['wiki', 'about']
         }
         self.seb_course_configuration = get_seb_configuration_instance()
 
@@ -46,7 +44,6 @@ class TestKeySource(TestCase):
         Must be set a new SebCourseConfiguration instance.
         """
         config = self.config_example
-        config['BLACKLIST_CHAPTERS'] = []
         config['CONFIG_KEYS'] = []
         config['BROWSER_KEYS'] = []
         course_key = CourseKey.from_string('course-v1:edX+DemoX+Second_Course')

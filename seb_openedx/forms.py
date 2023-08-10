@@ -24,8 +24,6 @@ class SebCourseConfigurationForm(forms.ModelForm):
             'browser_keys',
             'config_keys',
             'user_banning_enabled',
-            'blacklist_chapters',
-            'whitelist_paths',
         ]
         help_texts = {
             'permission_components': _("""Add a list of permmission components class separated by linebreak e.g:<br><br>
@@ -37,17 +35,7 @@ class SebCourseConfigurationForm(forms.ModelForm):
                                        ddd3f148d87776a571........dea39931ec8ea1b2bca21"""),
             'config_keys': _("""Add a list of config keys separated by linebreak e.g:<br><br>
                                        cd8827e4555e4eef82........5088a4bd5c9887f32e590 <br>
-                                       ddd3f148d87776a571........dea39931ec8ea1b2bca21"""),
-            'blacklist_chapters': _("""Add a list of chapters separated by linebreak e.g:<br><br>
-                                       e87b8744ea3949989f8aa113ad428515 <br>
-                                       33aa125724414ad090a1842ec244e11e"""),
-            'whitelist_paths': _("""Add a list of paths separated by linebreak e.g:<br><br>
-                                    about <br>
-                                    course-outline <br>
-                                    courseware <br>
-                                    discussion <br>
-                                    progress <br>
-                                    wiki""")
+                                       ddd3f148d87776a571........dea39931ec8ea1b2bca21""")
         }
 
     def _format_array_field(self, data_field):

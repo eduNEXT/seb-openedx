@@ -23,8 +23,6 @@ class SebCourseConfigurationAdmin(admin.ModelAdmin):
         'seb_permission_components',
         'seb_browser_keys',
         'seb_config_keys',
-        'seb_whitelist_paths',
-        'seb_blacklist_chapters',
     ]
     search_fields = ('course_id', )
     formfield_overrides = {
@@ -62,15 +60,6 @@ class SebCourseConfigurationAdmin(admin.ModelAdmin):
     def seb_browser_keys(self, obj):
         """show in list view the browser_keys"""
         return self.shows_simplified_list(obj.browser_keys)
-
-    def seb_whitelist_paths(self, obj):
-        """show in list view the whitelist_paths"""
-        return self.shows_simplified_list(obj.whitelist_paths)
-
-    def seb_blacklist_chapters(self, obj):
-        """show in list view the blacklist_chapters"""
-        return self.shows_simplified_list(obj.blacklist_chapters)
-
 
 admin.site.register(ForbiddenCourseAccess)
 admin.site.register(SebCourseConfiguration, SebCourseConfigurationAdmin)

@@ -24,8 +24,6 @@ class TestSebCourseConfiguration(TestCase):
             'BROWSER_KEYS': ['browser_key1', 'browser_key2'],
             'CONFIG_KEYS': ['config_key1', 'config_key2'],
             'USER_BANNING_ENABLED': False,
-            'BLACKLIST_CHAPTERS': [],
-            'WHITELIST_PATHS': []
         }
         self.assertIsInstance(config_as_dict, dict)
         self.assertDictEqual(config_as_dict, expected_dict)

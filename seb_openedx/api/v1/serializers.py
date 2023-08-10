@@ -22,13 +22,6 @@ class SebConfigurationSerializer(serializers.Serializer):
         "PERMISSION_COMPONENTS":[
             "AlwaysAllowStaff",
         ],
-        "WHITELIST_PATHS":[
-            "wiki",
-            "about",
-        ],
-        "BLACKLIST_CHAPTERS":[
-            "e87b8744ea3949989f8aa113ad428515",
-        ],
         "USER_BANNING_ENABLED": True,
     }
     """
@@ -38,14 +31,6 @@ class SebConfigurationSerializer(serializers.Serializer):
     )
     CONFIG_KEYS = serializers.ListField(
         child=serializers.RegexField(r"^[a-zA-Z0-9]+$"),
-        required=False,
-    )
-    WHITELIST_PATHS = serializers.ListField(
-        child=serializers.CharField(),
-        required=False,
-    )
-    BLACKLIST_CHAPTERS = serializers.ListField(
-        child=serializers.CharField(),
         required=False,
     )
     PERMISSION_COMPONENTS = serializers.ListField(

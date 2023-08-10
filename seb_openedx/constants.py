@@ -10,6 +10,4 @@ SEB_ARRAY_FIELDS_MODEL = [
     'permission_components',
     'browser_keys',
     'config_keys',
-    'blacklist_chapters',
-    'whitelist_paths',
 ]
