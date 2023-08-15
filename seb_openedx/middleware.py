@@ -49,7 +49,9 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             # By default is all denied
             access_denied = True
 
-            if self.is_whitelisted_view(request, course_key):
+            config = get_config_by_course(course_key)
+
+            if self.is_whitelisted_view(config, request, course_key):
                 # First: Broad white-listing
                 access_denied = False
 
@@ -121,7 +123,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             return self.courseware_error_response(request, context, *view_args, **view_kwargs)
         return self.generic_error_response(request, course_key, context)
 
-    def is_whitelisted_view(self, request, course_key):
+    def is_whitelisted_view(self, config, request, course_key):
         """ First broad filter: whitelisting of paths/tabs """
 
         # Whitelisting logic by alias
@@ -134,8 +136,7 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         views_module = inspect.getmodule(request.resolver_match.func).__name__
         paths_matched = [value for key, value in aliases.items() if views_module.startswith(key)]
         alias_current_path = paths_matched[0] if paths_matched else None
-        whitelist_paths = ['about']
-
+        whitelist_paths = config.get('WHITELIST_PATHS', [])
         if views_module.startswith('seb_openedx.api'):
             return True
 
@@ -151,11 +152,30 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
 
         # Whitelisting by url name
         if request.resolver_match.url_name:
-            url_names_allowed = list(whitelist_paths) + ['jump_to', 'jump_to_id']
+            url_names_allowed = ['about'] + ['jump_to', 'jump_to_id']
             for url_name in url_names_allowed:
                 if request.resolver_match.url_name.startswith(url_name):
                     return True
 
+        return False
+
+    def is_blacklisted_chapter(self, config, request, course_key):
+        """ Second more granular filter: blacklisting of specific chapters """
+        chapter = request.resolver_match.kwargs.get('chapter')
+        blackist_chapters = config.get('BLACKLIST_CHAPTERS', [])
+
+        if not blackist_chapters:
+            return False
+
+        if chapter in blackist_chapters:
+            return True
+
+        if 'courseware' in config.get('WHITELIST_PATHS', []) and self.is_xblock_request(request):
+            usage_id = request.resolver_match.kwargs.get('usage_id')
+            if usage_id:
+                chapter = get_chapter_from_location(usage_id, course_key)
+                if chapter in blackist_chapters:
+                    return True
         return False
 
     def courseware_error_response(self, request, context, *view_args, **view_kwargs):
