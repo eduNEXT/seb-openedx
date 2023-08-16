@@ -64,6 +64,13 @@ class TestMiddleware(TestCase):
         self.assertEqual(response, None)
         m_import.assert_called_with(settings.SEB_COURSE_MODULE)
 
+    @mock.patch('seb_openedx.middleware.SecureExamBrowserMiddleware.handle_access_denied')
+    @override_settings(SEB_PERMISSION_COMPONENTS=[])
+    def test_handle_access_denied_is_called(self, mocked_handle_access_denied_method):
+        """ Test that handle_access_denied is called """
+        request = self.create_fake_request()
+        self.seb_middleware.process_view(request, self.view, [], self.course_params)
+        mocked_handle_access_denied_method.assert_called_once()
 
 class FakeModuleForSebkeysTesting:
     """ Fake module for sebkeys middleware testing """
