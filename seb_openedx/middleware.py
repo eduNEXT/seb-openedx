@@ -18,6 +18,7 @@ from seb_openedx.edxapp_wrapper.get_chapter_from_location import get_chapter_fro
 from seb_openedx.user_banning import is_user_banned, ban_user
 from seb_openedx.permissions import get_enabled_permission_classes
 from seb_openedx.seb_keys_sources import get_config_by_course
+from django.core.exceptions import PermissionDenied
 
 LOG = logging.getLogger(__name__)
 
@@ -115,17 +116,12 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
             response.data.update({
                 "course_access": {
                     "has_access": False,
-                    "error_code": "audit_expired",
+                    "error_code": "seb_access_denied",
                     "additional_context_user_message": "Please use Safe Exam Browser to access this course."
                 }
             })
             return response
-        is_banned, new_ban = ban_user(user_name, course_key, request.user.username)
-        is_courseware_view = bool(view_func.__name__ == get_courseware_index_view().__name__)
-        context.update({"banned": is_banned, "is_new_ban": new_ban})
-        if is_courseware_view:
-            return self.courseware_error_response(request, context, *view_args, **view_kwargs)
-        return self.generic_error_response(request, course_key, context)
+        raise PermissionDenied("You don't have permission to access this page")
 
     def is_whitelisted_view(self, config, request, course_key):
         """ First broad filter: whitelisting of paths/tabs """
