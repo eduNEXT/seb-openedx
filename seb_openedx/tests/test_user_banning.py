@@ -17,7 +17,7 @@ class TestUserBanning(TestCase):
         """ Setup """
         course_key_pattern = r'(?P<course_key_string>[^/+]+(/|\+)[^/+]+(/|\+)[^/?]+)'
         self.url_pattern = f'^v1/courses/{course_key_pattern}'
-        self.seb_middleware = SecureExamBrowserMiddleware()
+        self.seb_middleware = SecureExamBrowserMiddleware(get_response=Mock())
         self.factory = RequestFactory()
         self.view = lambda course_key_string: None
         self.course_params = {"course_key_string": "course-v1:SebX+ID+run"}
