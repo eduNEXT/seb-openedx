@@ -23,6 +23,27 @@ What is this plugin?
 The `SEB Open edX plugin <https://github.com/eduNEXT/seb-openedx>`_ is an extension to the Open edX platform to add support for the Safe Exam Browser.
 
 
+Compatibility
+=============
+
++------------------+-------------------+
+| Open edX Release | Version           |
++==================+===================+
+| Koa              | >= 2.0.0, < 3.0.0 |
++------------------+-------------------+
+| Lilac            | >= 2.0.0, < 3.0.0 |
++------------------+-------------------+
+| Maple            | >= 2.0.0, < 3.0.0 |
++------------------+-------------------+
+| Nutmeg           | >= 2.0.0, < 3.0.0 |
++------------------+-------------------+
+| Olive            | >= 2.0.0, < 3.0.0 |
++------------------+-------------------+
+| Palm             | >= 3.0.0          |
++------------------+-------------------+
+| Quince           | >= 3.0.0          |
++------------------+-------------------+
+
 Getting started
 ===============
 You can find the documentation in the `main project website <https://seb-openedx.readthedocs.io/>`_.
