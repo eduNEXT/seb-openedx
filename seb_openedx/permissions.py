@@ -65,7 +65,7 @@ class CheckSEBHash:
             elif seb_keys:
                 return seb_keys
 
-        return all_keys
+        return list(set(all_keys))
 
     def check(self, request, course_key, *args, **kwargs):
         """
