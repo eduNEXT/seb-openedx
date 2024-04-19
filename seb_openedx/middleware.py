@@ -129,6 +129,11 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         context.update({"banned": is_banned, "is_new_ban": new_ban})
         if is_courseware_view:
             return self.courseware_error_response(request, context, *view_args, **view_kwargs)
+
+        is_xblock_view = bool(view_func.__name__ == 'render_xblock')
+        if is_xblock_view:
+            return self.xblock_error_response(request, context, *view_args, **view_kwargs)
+
         return self.generic_error_response(request, course_key, context)
 
     def is_whitelisted_view(self, config, request, course_key):
@@ -186,6 +191,21 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
                 if chapter in blackist_chapters:
                     return True
         return False
+
+    def xblock_error_response(self, request, context, *view_args, **view_kwargs):
+        """ error response when a chapter is being blocked in the MFE """
+        context.update({
+            'disable_accordion': True,
+            'allow_iframing': True,
+            'disable_header': True,
+            'disable_footer': True,
+            'disable_window_wrap': True,
+            'on_courseware_page': True,
+            'render_course_wide_assets': True,
+        })
+        response = render_to_response('seb-xblock.html', context, status=200)
+        response.xframe_options_exempt = True
+        return response
 
     def courseware_error_response(self, request, context, *view_args, **view_kwargs):
         """ error response when a chapter is being blocked """

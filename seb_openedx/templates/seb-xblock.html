@@ -1,0 +1,72 @@
+<%page expression_filter="h"/>
+<%inherit file="/main.html" />
+<%namespace name='static' file='/static_content.html'/>
+<%!
+from django.utils.translation import gettext as _
+
+from openedx.core.djangolib.markup import HTML, Text
+from openedx.core.djangolib.js_utils import js_escaped_string
+%>
+
+
+<%block name="headextra">
+<%static:css group='style-course-vendor'/>
+<%static:css group='style-course'/>
+</%block>
+
+
+
+<%block name="body_extra"/>
+
+<div class="course-wrapper chromeless">
+  <section class="course-content" id="course-content"\
+    style="display: block; width: auto; margin: 0;"
+  >
+      <main id="main" aria-label="Content">
+        <h1><%block name="pageheader">${_("Error: Access not allowed")}</%block></h1>
+        <p style="text-align: center;">
+            <%block name="pagecontent">
+                ${Text(_('This section can only be accessed with "Safe Exam Browser"'))}
+            </%block>
+        </p>
+        <p style="text-align: center;">
+            % if is_new_ban:
+                ${Text(_('Additionally you have been banned, you may ask your teacher or systems administrator to unblock you.'))}
+            % elif banned:
+                ${Text(_('You are banned from accessing the course, you may ask your teacher or systems administrator to unblock you.'))}
+            % endif
+        </p>
+      </main>
+  </section>
+</div>
+
+<script type="text/javascript">
+  (function() {
+    // If this view is rendered in an iframe within the learning microfrontend app
+    // it will report the height of its contents to the parent window when the
+    // document loads, window resizes, or DOM mutates.
+    if (window !== window.parent) {
+      document.body.className += ' view-in-mfe';
+      var lastHeight = window.offsetHeight;
+      var lastWidth = window.offsetWidth;
+      var contentElement = document.getElementById('content');
+
+      function dispatchResizeMessage(event) {
+        // Note: event is actually an Array of MutationRecord objects when fired from the MutationObserver
+        var isLoadEvent = event.type === 'load';
+        var newHeight = contentElement.offsetHeight;
+        var newWidth = contentElement.offsetWidth;
+
+        window.parent.postMessage({
+            type: 'plugin.resize',
+            payload: {
+              width: newWidth,
+              height: newHeight,
+            }
+          }, document.referrer
+        );
+      }
+      window.addEventListener('load', dispatchResizeMessage);
+    }
+  }());
+</script>
