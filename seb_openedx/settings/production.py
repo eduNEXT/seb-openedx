@@ -60,3 +60,7 @@ def plugin_settings(settings):
         'SEB_USER_BANNING_ENABLED',
         settings.SEB_USER_BANNING_ENABLED
     )
+    settings.SEB_USE_ALL_SOURCES = getattr(settings, 'ENV_TOKENS', {}).get(
+        'SEB_USE_ALL_SOURCES',
+        settings.SEB_USE_ALL_SOURCES
+    )

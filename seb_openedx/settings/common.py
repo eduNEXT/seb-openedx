@@ -46,6 +46,7 @@ def plugin_settings(settings):
     settings.SEB_KEY_DESTINATIONS = ['to_django_model', 'to_other_course_settings', 'to_site_configuration']
 
     # When SEB determines the access is denied one may specify what to whitelist/blacklist more granularly
+    settings.SEB_USE_ALL_SOURCES = True
     settings.SEB_WHITELIST_PATHS = []
     settings.SEB_BLACKLIST_CHAPTERS = []
     # Options include 'DatabaseBannedUsersBackend' and 'UserprofileBannedUsersBackend' (not yet implemented)

@@ -55,13 +55,17 @@ class CheckSEBHash:
                 ]
             }
         """
+        all_keys = []
         for source_function in get_ordered_seb_keys_sources():
             seb_keys = source_function(course_key)
             if isinstance(seb_keys, dict):
                 seb_keys = seb_keys.get(self.detailed_config_key, None)
-            if seb_keys:
+            if seb_keys and settings.SEB_USE_ALL_SOURCES:
+                all_keys += seb_keys
+            elif seb_keys:
                 return seb_keys
-        return None
+
+        return all_keys
 
     def check(self, request, course_key, *args, **kwargs):
         """
