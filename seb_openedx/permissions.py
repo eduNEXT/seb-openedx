@@ -28,6 +28,7 @@ class AlwaysAllowStaff(Permission):
         if masquerade and masquerade.role != 'staff':
             return False
         if hasattr(request, 'user') and request.user.is_authenticated and request.user.is_staff:
+            LOG.info("SEB AlwaysAllowStaff check passed for user: %s", request.user)
             return True
         return False
 
