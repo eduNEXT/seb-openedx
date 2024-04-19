@@ -8,7 +8,7 @@ import logging
 from django.http import HttpResponseNotFound
 from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
 from seb_openedx.edxapp_wrapper.edxmako_module import render_to_string, render_to_response
 from seb_openedx.edxapp_wrapper.get_courseware_module import get_courseware_module
@@ -37,6 +37,10 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
 
+        if course_key is None:
+            usage_key_string = view_kwargs.get('usage_key_string')
+            usage_key = UsageKey.from_string(usage_key_string) if usage_key_string else None
+            course_key = usage_key.course_key if usage_key else None
         # When the request is for masquerade (ajax) we leave it alone
         if self.get_view_path(request) == 'courseware.masquerade':
             return None
