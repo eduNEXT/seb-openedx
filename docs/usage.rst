@@ -111,6 +111,11 @@ This is the list of variables that you can alter globally
 
     This setting controls the backend implementation for the mako renderer wrapper. Defaults to the hawthorn compatible implementation.
 
+- **SEB_USE_ALL_SOURCES**
+    Default: ``True``
+
+    This setting controls the whether the first source to return a key for a course should be used, of if all of them will be added in order.
+
 
 Key Hashes
 ==========
