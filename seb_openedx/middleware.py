@@ -50,9 +50,8 @@ class SecureExamBrowserMiddleware:
         if any([
             self.get_view_path(request) == 'courseware.masquerade',
             re.match(f'^/courses/{settings.COURSE_KEY_REGEX}/masquerade', request.path),
-            ]):
+        ]):
             return None
-
 
         if course_key:
             # By default is all denied
@@ -169,8 +168,7 @@ class SecureExamBrowserMiddleware:
             re.match(f'^/api/course_home/course_metadata/{settings.COURSE_KEY_REGEX}.*', request.path),
             re.match(f'^/courses/{settings.COURSE_KEY_REGEX}/courseware-search/enabled/.*', request.path),
             re.match(f'^/api/edx_proctoring/v1/proctored_exam/attempt/course_id/{settings.COURSE_KEY_REGEX}.*', request.path),
-
-            ]):
+        ]):
             return True
 
         if not whitelist_paths:
