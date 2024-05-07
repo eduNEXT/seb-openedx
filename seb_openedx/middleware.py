@@ -59,6 +59,9 @@ class SecureExamBrowserMiddleware:
 
             config = get_config_by_course(course_key)
 
+            if settings.SEB_INDIVIDUAL_COURSE_ACTIVATION and not config.get("ENABLED", False):
+                return None
+
             if self.is_whitelisted_view(config, request, course_key):
                 # First: Broad white-listing
                 access_denied = False
@@ -200,8 +203,14 @@ class SecureExamBrowserMiddleware:
 
         if 'courseware' in config.get('WHITELIST_PATHS', []) and self.is_xblock_request(request):
             usage_id = request.resolver_match.kwargs.get('usage_id')
+            usage_key_string = request.resolver_match.kwargs.get('usage_key_string')
+
             if usage_id:
                 chapter = get_chapter_from_location(usage_id, course_key)
+            elif usage_key_string:
+                chapter = get_chapter_from_location(usage_key_string, course_key)
+                print("El chapter que tenemos en get_chapter_from_location:", chapter)
+
                 if chapter in blackist_chapters:
                     return True
         return False
