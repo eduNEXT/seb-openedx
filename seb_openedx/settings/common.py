@@ -54,3 +54,4 @@ def plugin_settings(settings):
     # Options include 'DatabaseBannedUsersBackend' and 'UserprofileBannedUsersBackend' (not yet implemented)
     settings.SEB_USER_BANNING_BACKEND = 'DatabaseBannedUsersBackend'
     settings.SEB_USER_BANNING_ENABLED = False
+    settings.SEB_ALLOW_MFE_ACCESS = False
