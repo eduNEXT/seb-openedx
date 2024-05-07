@@ -40,7 +40,10 @@ class SecureExamBrowserMiddleware:
             return None
 
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
-        course_key = CourseKey.from_string(course_key_string) if course_key_string else None
+        try:
+            course_key = CourseKey.from_string(course_key_string) if course_key_string else None
+        except opaque_keys.InvalidKeyError:
+            course_key = None
 
         if course_key is None:
             usage_key_string = view_kwargs.get('usage_key_string')
