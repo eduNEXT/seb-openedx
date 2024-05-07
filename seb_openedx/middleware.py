@@ -232,7 +232,10 @@ class SecureExamBrowserMiddleware(MiddlewareMixin):
 
     def is_xblock_request(self, request):
         """ returns if it's an xblock HTTP request or not """
-        return request.resolver_match.func.__name__ == 'handle_xblock_callback'
+        return any([
+            request.resolver_match.func.__name__ == 'handle_xblock_callback',
+            request.resolver_match.func.__name__ == 'render_xblock',
+        ])
 
     def get_view_path(self, request):
         """ get full import path of match resolver """
