@@ -92,6 +92,30 @@ def from_global_settings(course_key):
     return None
 
 
+def from_global_settings_default_keys(*args):
+    """
+    Retrieve from global settings using the default key, ignores course_key, for example:
+    # lms/env/common.py
+    SAFE_EXAM_BROWSER = {
+        "default": ["FAKE_SEB_KEY"]
+    }
+    """
+    if hasattr(settings, 'SAFE_EXAM_BROWSER'):
+        return settings.SAFE_EXAM_BROWSER.get('default', None)
+    return None
+
+
+def from_site_configuration_default_keys(*args):
+    """
+    Get SEB keys from djangoapps.site_configuration ignoring course_key and using the default
+    """
+    configuration_helpers = get_configuration_helpers()
+    if configuration_helpers.has_override_value('SAFE_EXAM_BROWSER'):
+        keys_dict = configuration_helpers.get_configuration_value('SAFE_EXAM_BROWSER')
+        return keys_dict.get('default', None)
+    return None
+
+
 def from_site_configuration(course_key):
     """
     Get SEB keys from djangoapps.site_configuration
