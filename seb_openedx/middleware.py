@@ -8,6 +8,7 @@ import re
 
 from django.http import HttpResponseNotFound
 from django.conf import settings
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
 from seb_openedx.edxapp_wrapper.edxmako_module import render_to_string, render_to_response
@@ -15,6 +16,7 @@ from seb_openedx.edxapp_wrapper.get_courseware_module import get_courseware_modu
 from seb_openedx.edxapp_wrapper.get_courseware_index_view import get_courseware_index_view
 from seb_openedx.lazy_import_seb_courseware_index import LazyImportSebCoursewareIndex
 from seb_openedx.edxapp_wrapper.get_chapter_from_location import get_chapter_from_location
+from seb_openedx.edxapp_wrapper.get_parent_from_location import get_parent_from_location
 from seb_openedx.user_banning import is_user_banned, ban_user
 from seb_openedx.permissions import get_enabled_permission_classes
 from seb_openedx.seb_keys_sources import get_config_by_course
@@ -32,7 +34,7 @@ class SecureExamBrowserMiddleware:
         response = self.get_response(request)
         return response
 
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals,too-many-return-statements,too-many-branches
     def process_view(self, request, view_func, view_args, view_kwargs):
         """ Start point """
 
@@ -42,7 +44,7 @@ class SecureExamBrowserMiddleware:
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         try:
             course_key = CourseKey.from_string(course_key_string) if course_key_string else None
-        except opaque_keys.InvalidKeyError:
+        except InvalidKeyError:
             course_key = None
 
         if course_key is None:
@@ -71,6 +73,14 @@ class SecureExamBrowserMiddleware:
 
             if self.is_blacklisted_chapter(config, request, course_key):
                 # Second: Granular black-listing
+                access_denied = True
+
+            if self.is_blacklisted_sequence(config, request, course_key):
+                # Third: Granular subsection level black-listing
+                access_denied = True
+
+            if self.is_blacklisted_vertical(config, request, course_key):
+                # Fourth: Granular unit level black-listing
                 access_denied = True
 
             user_name, masquerade, context = self.handle_masquerade(request, course_key)
@@ -213,8 +223,36 @@ class SecureExamBrowserMiddleware:
             elif usage_key_string:
                 chapter = get_chapter_from_location(usage_key_string, course_key)
 
-                if chapter in blackist_chapters:
-                    return True
+            if chapter in blackist_chapters:
+                return True
+        return False
+
+    def is_blacklisted_sequence(self, config, request, course_key):
+        """ Third more granular filter: blacklisting of specific subsections (sequence | exam) """
+        blackist_sequences = config.get('BLACKLIST_SEQUENCES', [])
+        if not blackist_sequences:
+            return False
+
+        if self.is_xblock_request(request):
+            usage_key_string = request.resolver_match.kwargs.get('usage_key_string')
+            sequence = get_parent_from_location(usage_key_string, course_key, level='sequence')
+            if sequence in blackist_sequences:
+                return True
+
+        return False
+
+    def is_blacklisted_vertical(self, config, request, course_key):
+        """ Third more granular filter: blacklisting of specific units (verticals) """
+        blackist_verticals = config.get('BLACKLIST_VERTICALS', [])
+        if not blackist_verticals:
+            return False
+
+        if self.is_xblock_request(request):
+            usage_key_string = request.resolver_match.kwargs.get('usage_key_string')
+            vertical = get_parent_from_location(usage_key_string, course_key, level='vertical')
+            if vertical in blackist_verticals:
+                return True
+
         return False
 
     def xblock_error_response(self, request, context, *view_args, **view_kwargs):
