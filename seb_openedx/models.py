@@ -99,6 +99,6 @@ class SebCourseConfiguration(models.Model):
             'BLACKLIST_SEQUENCES': blacklist_sequences,
             'BLACKLIST_VERTICALS': blacklist_verticals,
             'WHITELIST_PATHS': whitelist_paths,
-            'ALLOW_MFE_ACCESS': allow_mfe_access,
-            'ENABLED': seb_enabled,
+            'ALLOW_MFE_ACCESS': instance.allow_mfe_access,
+            'ENABLED': instance.seb_enabled,
         }
