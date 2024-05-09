@@ -48,9 +48,23 @@ class SebCourseConfiguration(models.Model):
     user_banning_enabled = models.BooleanField(
         default=getattr(settings, 'SEB_USER_BANNING_ENABLED', False),
     )
+    allow_mfe_access = models.BooleanField(
+        default=getattr(settings, 'SEB_ALLOW_MFE_ACCESS', False),
+    )
+    seb_enabled = models.BooleanField(
+        default=False,
+    )
     blacklist_chapters = models.TextField(
         blank=True,
         default=get_default_array_value(getattr(settings, 'SEB_BLACKLIST_CHAPTERS', [])),
+    )
+    blacklist_sequences = models.TextField(
+        blank=True,
+        default=get_default_array_value(getattr(settings, 'BLACKLIST_SEQUENCES', [])),
+    )
+    blacklist_verticals = models.TextField(
+        blank=True,
+        default=get_default_array_value(getattr(settings, 'BLACKLIST_VERTICALS', [])),
     )
     whitelist_paths = models.TextField(
         blank=True,
@@ -73,6 +87,8 @@ class SebCourseConfiguration(models.Model):
         browser_keys = [_f for _f in instance.browser_keys.split(SEPARATOR_CHAR) if _f]
         config_keys = [_f for _f in instance.config_keys.split(SEPARATOR_CHAR) if _f]
         blacklist_chapters = [_f for _f in instance.blacklist_chapters.split(SEPARATOR_CHAR) if _f]
+        blacklist_sequences = [_f for _f in instance.blacklist_sequences.split(SEPARATOR_CHAR) if _f]
+        blacklist_verticals = [_f for _f in instance.blacklist_verticals.split(SEPARATOR_CHAR) if _f]
         whitelist_paths = [_f for _f in instance.whitelist_paths.split(SEPARATOR_CHAR) if _f]
         return {
             'PERMISSION_COMPONENTS': permission_components,
@@ -80,5 +96,9 @@ class SebCourseConfiguration(models.Model):
             'CONFIG_KEYS': config_keys,
             'USER_BANNING_ENABLED': instance.user_banning_enabled,
             'BLACKLIST_CHAPTERS': blacklist_chapters,
+            'BLACKLIST_SEQUENCES': blacklist_sequences,
+            'BLACKLIST_VERTICALS': blacklist_verticals,
             'WHITELIST_PATHS': whitelist_paths,
+            'ALLOW_MFE_ACCESS': allow_mfe_access,
+            'ENABLED': seb_enabled,
         }
