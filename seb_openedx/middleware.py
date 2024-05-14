@@ -7,7 +7,7 @@ import logging
 
 from django.http import HttpResponseNotFound
 from django.conf import settings
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
 from seb_openedx.edxapp_wrapper.edxmako_module import render_to_string, render_to_response
 from seb_openedx.edxapp_wrapper.get_courseware_module import get_courseware_module
@@ -43,6 +43,10 @@ class SecureExamBrowserMiddleware:
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
         course_key = CourseKey.from_string(course_key_string) if course_key_string else None
 
+        if course_key is None:
+            usage_key_string = view_kwargs.get('usage_key_string')
+            usage_key = UsageKey.from_string(usage_key_string) if usage_key_string else None
+            course_key = usage_key.course_key if usage_key else None
         # When the request is for masquerade (ajax) we leave it alone
         if self.get_view_path(request) == 'courseware.masquerade':
             return None
@@ -131,6 +135,11 @@ class SecureExamBrowserMiddleware:
         context.update({"banned": is_banned, "is_new_ban": new_ban})
         if is_courseware_view:
             return self.courseware_error_response(request, context, *view_args, **view_kwargs)
+
+        is_xblock_view = bool(view_func.__name__ == 'render_xblock')
+        if is_xblock_view:
+            return self.xblock_error_response(request, context, *view_args, **view_kwargs)
+
         return self.generic_error_response(request, course_key, context)
 
     def is_whitelisted_view(self, config, request, course_key):
@@ -189,6 +198,21 @@ class SecureExamBrowserMiddleware:
                     return True
         return False
 
+    def xblock_error_response(self, request, context, *view_args, **view_kwargs):
+        """ error response when a chapter is being blocked in the MFE """
+        context.update({
+            'disable_accordion': True,
+            'allow_iframing': True,
+            'disable_header': True,
+            'disable_footer': True,
+            'disable_window_wrap': True,
+            'on_courseware_page': True,
+            'render_course_wide_assets': True,
+        })
+        response = render_to_response('seb-xblock.html', context, status=200)
+        response.xframe_options_exempt = True
+        return response
+
     def courseware_error_response(self, request, context, *view_args, **view_kwargs):
         """ error response when a chapter is being blocked """
         html = Fragment()
@@ -214,7 +238,10 @@ class SecureExamBrowserMiddleware:
 
     def is_xblock_request(self, request):
         """ returns if it's an xblock HTTP request or not """
-        return request.resolver_match.func.__name__ == 'handle_xblock_callback'
+        return any([
+            request.resolver_match.func.__name__ == 'handle_xblock_callback',
+            request.resolver_match.func.__name__ == 'render_xblock',
+        ])
 
     def get_view_path(self, request):
         """ get full import path of match resolver """
