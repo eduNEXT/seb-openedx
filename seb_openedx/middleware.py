@@ -6,7 +6,6 @@ import inspect
 import logging
 
 from django.http import HttpResponseNotFound
-from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
@@ -24,8 +23,15 @@ LOG = logging.getLogger(__name__)
 COURSE_METADATA_PATH = 'lms.djangoapps.course_home_api.course_metadata.views'
 
 
-class SecureExamBrowserMiddleware(MiddlewareMixin):
+class SecureExamBrowserMiddleware:
     """ Middleware for seb_openedx """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        """ Base method of the clase based middleware """
+        response = self.get_response(request)
+        return response
 
     # pylint: disable=too-many-locals
     def process_view(self, request, view_func, view_args, view_kwargs):
