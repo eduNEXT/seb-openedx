@@ -47,13 +47,10 @@ from openedx.core.djangolib.js_utils import js_escaped_string
     // document loads, window resizes, or DOM mutates.
     if (window !== window.parent) {
       document.body.className += ' view-in-mfe';
-      var lastHeight = window.offsetHeight;
-      var lastWidth = window.offsetWidth;
       var contentElement = document.getElementById('content');
 
       function dispatchResizeMessage(event) {
         // Note: event is actually an Array of MutationRecord objects when fired from the MutationObserver
-        var isLoadEvent = event.type === 'load';
         var newHeight = contentElement.offsetHeight;
         var newWidth = contentElement.offsetWidth;
 
