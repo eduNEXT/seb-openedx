@@ -50,7 +50,7 @@ class SebCourseConfigurationForm(forms.ModelForm):
             'whitelist_paths': _("""Add a list of paths separated by linebreak e.g:<br><br>
                                     about <br>
                                     course-outline <br>
-                                    courseware **used for restricting chaptes, sequences or verticals<br>
+                                    courseware **used for restricting chapters, sequences or verticals<br>
                                     discussion <br>
                                     progress <br>
                                     wiki""")

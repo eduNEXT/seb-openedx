@@ -206,12 +206,12 @@ class SecureExamBrowserMiddleware:
     def is_blacklisted_chapter(self, config, request, course_key):
         """ Second more granular filter: blacklisting of specific chapters """
         chapter = request.resolver_match.kwargs.get('chapter')
-        blackist_chapters = config.get('BLACKLIST_CHAPTERS', [])
+        blacklist_chapters = config.get('BLACKLIST_CHAPTERS', [])
 
-        if not blackist_chapters:
+        if not blacklist_chapters:
             return False
 
-        if chapter in blackist_chapters:
+        if chapter in blacklist_chapters:
             return True
 
         if 'courseware' in config.get('WHITELIST_PATHS', []) and self.is_xblock_request(request):
@@ -223,34 +223,34 @@ class SecureExamBrowserMiddleware:
             elif usage_key_string:
                 chapter = get_chapter_from_location(usage_key_string, course_key)
 
-            if chapter in blackist_chapters:
+            if chapter in blacklist_chapters:
                 return True
         return False
 
     def is_blacklisted_sequence(self, config, request, course_key):
         """ Third more granular filter: blacklisting of specific subsections (sequence | exam) """
-        blackist_sequences = config.get('BLACKLIST_SEQUENCES', [])
-        if not blackist_sequences:
+        blacklist_sequences = config.get('BLACKLIST_SEQUENCES', [])
+        if not blacklist_sequences:
             return False
 
         if self.is_xblock_request(request):
             usage_key_string = request.resolver_match.kwargs.get('usage_key_string')
             sequence = get_parent_from_location(usage_key_string, course_key, level='sequence')
-            if sequence in blackist_sequences:
+            if sequence in blacklist_sequences:
                 return True
 
         return False
 
     def is_blacklisted_vertical(self, config, request, course_key):
         """ Third more granular filter: blacklisting of specific units (verticals) """
-        blackist_verticals = config.get('BLACKLIST_VERTICALS', [])
-        if not blackist_verticals:
+        blacklist_verticals = config.get('BLACKLIST_VERTICALS', [])
+        if not blacklist_verticals:
             return False
 
         if self.is_xblock_request(request):
             usage_key_string = request.resolver_match.kwargs.get('usage_key_string')
             vertical = get_parent_from_location(usage_key_string, course_key, level='vertical')
-            if vertical in blackist_verticals:
+            if vertical in blacklist_verticals:
                 return True
 
         return False
