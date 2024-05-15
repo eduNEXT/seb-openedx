@@ -212,7 +212,6 @@ class SecureExamBrowserMiddleware:
                 chapter = get_chapter_from_location(usage_id, course_key)
             elif usage_key_string:
                 chapter = get_chapter_from_location(usage_key_string, course_key)
-                print("El chapter que tenemos en get_chapter_from_location:", chapter)
 
                 if chapter in blackist_chapters:
                     return True

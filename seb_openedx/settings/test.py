@@ -18,7 +18,7 @@ vars().update(SETTINGS.__dict__)
 SEB_COURSEWARE_MODULE = 'seb_openedx.tests.test_utils'
 SEB_COURSEWARE_INDEX_VIEW = 'seb_openedx.tests.test_utils'
 COURSE_KEY_PATTERN = r'(?P<course_key_string>[^/+]+(/|\+)[^/+]+(/|\+)[^/?]+)'
-COURSE_KEY_REGEX = r'(?P<course_key_string>[^/+]+(/|\+)[^/+]+(/|\+)[^/?]+)'
+COURSE_KEY_REGEX = COURSE_KEY_PATTERN.replace('P<course_key_string>', ':')
 COURSE_ID_PATTERN = COURSE_KEY_PATTERN.replace('course_key_string', 'course_id')
 FEATURES = {}
 FEATURES['ENABLE_OTHER_COURSE_SETTINGS'] = True
