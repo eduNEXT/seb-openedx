@@ -116,6 +116,60 @@ This is the list of variables that you can alter globally
 
     This setting controls the whether the first source to return a key for a course should be used, of if all of them will be added in order.
 
+- **SEB_ALLOW_MFE_ACCESS**
+    Default: ``False``
+
+    This setting allows the learning MFE to render the course_home views so that a user can interact with the course outline and navigate to the units.
+
+    This setting can also be activated for individual courses in the course-specific configuration. Use the ``ALLOW_MFE_ACCESS`` for this.
+
+    Example:
+
+        .. code-block:: json
+
+            "SAFE_EXAM_BROWSER":{
+                "course-v1:seb-openedx+course_2+2024":{
+                  "BROWSER_KEYS":[
+                    "cd8827e4555e4eef82........5088a4bd5c9887f32e590"
+                  ],
+                  "CONFIG_KEYS":[
+                    "9887f32e590cd8827e........5088a4bd5c4555e4eef82"
+                  ],
+                  "ALLOW_MFE_ACCESS": true
+                }
+            }
+
+- **SEB_INDIVIDUAL_COURSE_ACTIVATION**
+    Default: ``False``
+
+    This setting modifies how each course reacts to the seb middleware. When the settings is set to `False`, the seb-openedx connection will enable the restrictions for every course where it can find a Browser or Config key set. When set to `True` seb-openedx will require that the configuration for an individual course contains the key `"ENABLED": True`
+
+
+    Example:
+
+        .. code-block:: json
+
+            "SAFE_EXAM_BROWSER":{
+                "course-v1:seb-openedx+course_2+2024":{
+                  "BROWSER_KEYS":[
+                    "cd8827e4555e4eef82........5088a4bd5c9887f32e590"
+                  ],
+                  "CONFIG_KEYS":[
+                    "9887f32e590cd8827e........5088a4bd5c4555e4eef82"
+                  ],
+                  "ENABLED": true
+                }
+            }
+
+
+    Example of the ``other_course_settings`` config when using together with instance wide keys:
+
+        .. code-block:: json
+
+            "SAFE_EXAM_BROWSER":{
+                "ENABLED": true
+            }
+
 
 Key Hashes
 ==========
@@ -142,6 +196,8 @@ This is done on a per-course basis and can be modified in 3 different locations 
 
     As before for the global settings, you can add a key ``SAFE_EXAM_BROWSER`` to the ``lms.env.json`` file and inside of it, a dictionary with objects containing the ``<course_id>`` and configurations.
 
+    Additionally a instance wide seb key can be set for all courses in the open edX instance using the ``default`` key in the ``SAFE_EXAM_BROWSER`` dictionary.
+
     Here is an example of setting restrictions on two different courses at the same time. The course ``course-v1:seb-openedx+course_1+2019`` uses the simple list notation and the ``course-v1:seb-openedx+course_2+2019`` uses a more advanced notation with more settings.
 
     .. code-block:: json
@@ -163,7 +219,9 @@ This is done on a per-course basis and can be modified in 3 different locations 
               "CONFIG_KEYS":[
                 "9887f32e590cd8827e........5088a4bd5c4555e4eef82"
               ],
-              "USER_BANNING_ENABLED":true
+              "USER_BANNING_ENABLED":true,
+              "ALLOW_MFE_ACCESS": true,
+              "ENABLED": true
             }
         }
 
@@ -187,8 +245,21 @@ This is done on a per-course basis and can be modified in 3 different locations 
                 - CONFIG_KEYS:
                     - 9887f32e590cd8827e........5088a4bd5c4555e4eef82
                 - USER_BANNING_ENABLED: True
+                - ALLOW_MFE_ACCESS: True
+                - ENABLED: True
             ...
 
+
+    This is an example of using the instance wide seb key option in the json configuration:
+
+    .. code-block:: json
+
+        "SAFE_EXAM_BROWSER":{
+            "default": [
+                "cd8827e4555e4eef82........5088a4bd5c9887f32e590",
+                "9887f32e590cd8827e........5088a4bd5c4555e4eef82",
+            ]
+        }
 
 #. Advanced studio settings ``from_other_course_settings``
 
@@ -237,7 +308,7 @@ Advanced usage
 
 The basic usage of the SEB Open edX plugin grants or denies access to a complete course. This means that every page of the course will be blocked for access without the configured Safe Exam Browser.
 
-More advanced users can make use of the `Path Whitelisting`_ and `Chapter Blacklisting`_ options to provide a more flexible approach.
+More advanced users can make use of the `Path Whitelisting`_ or the granular options `Chapter Blacklisting`_(Sections), `Sequence Blacklisting`_(Subsections) and `Vertical Blacklisting`_(Units) options to provide a more flexible approach.
 
 
 Path Whitelisting
@@ -325,9 +396,49 @@ Which means your chapter ID is `e87b8744ea3949989f8aa113ad428515`.
 
 As always you can use a list of IDs for multiple chapters.
 
-.. note::
-    Currently only chapters are supported for blacklisting. Support for sections or verticals might come in the future.
 
+Sequence Blacklisting
+--------------------
+
+In the same way as chapters, sequences can also be specifically restricted when ``"courseware"`` is whitelisted. Using *Sequence Blacklisting* allows you to mark specific Sequences, also called **Subsections** in the Studio interface, for secure access. See the `Chapter Blacklisting`_ explanation for more detail.
+
+Example of subsection restriction using the learning MFE:
+
+.. code-block:: json
+
+    "course-v1:seb-openedx+course_1+2024": {
+        "BROWSER_KEYS":[
+        "cd8827e4555e4eef82........5088a4bd5c9887f32e590"
+        ],
+        "CONFIG_KEYS":[
+        "9887f32e590cd8827e........5088a4bd5c4555e4eef82"
+        ],
+        "WHITELIST_PATHS": ["courseware"],
+        "BLACKLIST_SEQUENCES": ["f80c166b31da4a129f2d23f9fe8bb97b"]
+        "ALLOW_MFE_ACCESS": true
+    }
+
+
+Vertical Blacklisting
+--------------------
+
+Verticals, also called **Units** in Studio work similarly and can be marked for secure access using the ``BLACKLIST_VERTICALS`` key. See the `Chapter Blacklisting`_ explanation for more detail.
+
+Example of unit restriction using the learning MFE:
+
+.. code-block:: json
+
+    "course-v1:seb-openedx+course_1+2024": {
+        "BROWSER_KEYS":[
+        "cd8827e4555e4eef82........5088a4bd5c9887f32e590"
+        ],
+        "CONFIG_KEYS":[
+        "9887f32e590cd8827e........5088a4bd5c4555e4eef82"
+        ],
+        "WHITELIST_PATHS": ["courseware"],
+        "BLACKLIST_VERTICALS": ["43405e86a57143e9953e3d990bece4e4"]
+        "ALLOW_MFE_ACCESS": true
+    }
 
 
 User Banning
