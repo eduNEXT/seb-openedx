@@ -253,6 +253,7 @@ This is done on a per-course basis and can be modified in 3 different locations 
     This is an example of using the instance wide seb key option in the json configuration:
 
     .. code-block:: json
+
         "SAFE_EXAM_BROWSER":{
             "default": [
                 "cd8827e4555e4eef82........5088a4bd5c9887f32e590",
