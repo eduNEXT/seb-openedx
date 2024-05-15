@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 import sys
 import inspect
 import logging
+import re
 
 from django.http import HttpResponseNotFound
 from django.conf import settings
@@ -19,8 +20,6 @@ from seb_openedx.permissions import get_enabled_permission_classes
 from seb_openedx.seb_keys_sources import get_config_by_course
 
 LOG = logging.getLogger(__name__)
-
-COURSE_METADATA_PATH = 'lms.djangoapps.course_home_api.course_metadata.views'
 
 
 class SecureExamBrowserMiddleware:
@@ -41,18 +40,20 @@ class SecureExamBrowserMiddleware:
             return None
 
         course_key_string = view_kwargs.get('course_key_string') or view_kwargs.get('course_id')
-        course_key = CourseKey.from_string(course_key_string) if course_key_string else None
+        try:
+            course_key = CourseKey.from_string(course_key_string) if course_key_string else None
+        except opaque_keys.InvalidKeyError:
+            course_key = None
 
         if course_key is None:
             usage_key_string = view_kwargs.get('usage_key_string')
             usage_key = UsageKey.from_string(usage_key_string) if usage_key_string else None
             course_key = usage_key.course_key if usage_key else None
         # When the request is for masquerade (ajax) we leave it alone
-        if self.get_view_path(request) == 'courseware.masquerade':
-            return None
-
-        # Whitelist API endpoints except course_metadata
-        if request.path.startswith('/api/') and self.get_view_path(request) != COURSE_METADATA_PATH:
+        if any([
+            self.get_view_path(request) == 'courseware.masquerade',
+            re.match(f'^/courses/{settings.COURSE_KEY_REGEX}/masquerade', request.path),
+        ]):
             return None
 
         if course_key:
@@ -60,6 +61,9 @@ class SecureExamBrowserMiddleware:
             access_denied = True
 
             config = get_config_by_course(course_key)
+
+            if settings.SEB_INDIVIDUAL_COURSE_ACTIVATION and not config.get("ENABLED", False):
+                return None
 
             if self.is_whitelisted_view(config, request, course_key):
                 # First: Broad white-listing
@@ -81,7 +85,7 @@ class SecureExamBrowserMiddleware:
                     if permission().check(request, course_key, masquerade):
                         access_denied = False
                     else:
-                        LOG.info("Permission: %s denied for: %s.", permission, user_name)
+                        LOG.info("Permission: %s denied for: %s. | %s", permission, user_name, request.path)
 
             if access_denied:
                 return self.handle_access_denied(
@@ -120,16 +124,6 @@ class SecureExamBrowserMiddleware:
     # pylint: disable=too-many-arguments
     def handle_access_denied(self, request, view_func, view_args, view_kwargs, course_key, context, user_name):
         """ handle what to return and do when access denied """
-        if self.get_view_path(request) == COURSE_METADATA_PATH:
-            response = view_func(request, *view_args, **view_kwargs)
-            response.data.update({
-                "course_access": {
-                    "has_access": False,
-                    "error_code": "audit_expired",
-                    "additional_context_user_message": "Please use Safe Exam Browser to access this course."
-                }
-            })
-            return response
         is_banned, new_ban = ban_user(user_name, course_key, request.user.username)
         is_courseware_view = bool(view_func.__name__ == get_courseware_index_view().__name__)
         context.update({"banned": is_banned, "is_new_ban": new_ban})
@@ -158,6 +152,26 @@ class SecureExamBrowserMiddleware:
         whitelist_paths = config.get('WHITELIST_PATHS', [])
 
         if views_module.startswith('seb_openedx.api'):
+            return True
+
+        # MFEs require more granular blocks than module level
+        allow_mfes = config.get('ALLOW_MFE_ACCESS', settings.SEB_ALLOW_MFE_ACCESS)
+        if allow_mfes and any([
+            # urls to allow whitelisting the block
+            re.match(f'^/api/courseware/course/{settings.COURSE_KEY_REGEX}.*', request.path),
+            re.match(f'^/api/courseware/sequence/{settings.USAGE_ID_PATTERN}.*', request.path),
+
+            # this call returns the tree of block units
+            re.match(f'^/api/course_home/outline/{settings.COURSE_KEY_REGEX}.*', request.path),
+
+            # jump_to allows deeplinking
+            re.match(f'^/courses/{settings.COURSE_KEY_REGEX}/jump_to/.*', request.path),
+
+            # other APIs called by the learning MFE that contain no content
+            re.match(f'^/api/course_home/course_metadata/{settings.COURSE_KEY_REGEX}.*', request.path),
+            re.match(f'^/courses/{settings.COURSE_KEY_REGEX}/courseware-search/enabled/.*', request.path),
+            re.match(f'^/api/edx_proctoring/v1/proctored_exam/attempt/course_id/{settings.COURSE_KEY_REGEX}.*', request.path),
+        ]):
             return True
 
         if not whitelist_paths:
@@ -192,8 +206,13 @@ class SecureExamBrowserMiddleware:
 
         if 'courseware' in config.get('WHITELIST_PATHS', []) and self.is_xblock_request(request):
             usage_id = request.resolver_match.kwargs.get('usage_id')
+            usage_key_string = request.resolver_match.kwargs.get('usage_key_string')
+
             if usage_id:
                 chapter = get_chapter_from_location(usage_id, course_key)
+            elif usage_key_string:
+                chapter = get_chapter_from_location(usage_key_string, course_key)
+
                 if chapter in blackist_chapters:
                     return True
         return False

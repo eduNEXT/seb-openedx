@@ -64,3 +64,11 @@ def plugin_settings(settings):
         'SEB_USE_ALL_SOURCES',
         settings.SEB_USE_ALL_SOURCES
     )
+    settings.SEB_ALLOW_MFE_ACCESS = getattr(settings, 'ENV_TOKENS', {}).get(
+        'SEB_ALLOW_MFE_ACCESS',
+        settings.SEB_ALLOW_MFE_ACCESS
+    )
+    settings.SEB_INDIVIDUAL_COURSE_ACTIVATION = getattr(settings, 'ENV_TOKENS', {}).get(
+        'SEB_INDIVIDUAL_COURSE_ACTIVATION',
+        settings.SEB_INDIVIDUAL_COURSE_ACTIVATION
+    )
