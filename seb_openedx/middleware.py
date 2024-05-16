@@ -5,9 +5,11 @@ import sys
 import inspect
 import logging
 import re
+import urllib.parse
 
 from django.http import HttpResponseNotFound
 from django.conf import settings
+from django.urls import reverse
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
@@ -137,6 +139,17 @@ class SecureExamBrowserMiddleware:
         is_banned, new_ban = ban_user(user_name, course_key, request.user.username)
         is_courseware_view = bool(view_func.__name__ == get_courseware_index_view().__name__)
         context.update({"banned": is_banned, "is_new_ban": new_ban})
+
+        if not is_banned:
+            try:
+                usage_key_string = request.resolver_match.kwargs.get('usage_key_string')
+                url = reverse('jump_to', kwargs=dict(course_id=str(course_key), location=str(usage_key_string)))
+                parsed_url = urllib.parse.urlparse(url)
+                seb_url = parsed_url._replace(scheme="seb", netloc=request.get_host())
+                context.update({"jump_to_link": urllib.parse.urlunparse(seb_url)})
+            except Exception as e:
+                context.update({"jump_to_link": "#"})
+
         if is_courseware_view:
             return self.courseware_error_response(request, context, *view_args, **view_kwargs)
 

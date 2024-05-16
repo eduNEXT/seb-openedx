@@ -29,6 +29,16 @@ from openedx.core.djangolib.js_utils import js_escaped_string
                 ${Text(_('This section can only be accessed with "Safe Exam Browser"'))}
             </%block>
         </p>
+        % if not banned:
+        <p style="text-align: center;">
+            <%block name="seblink">
+                ${Text(_('If you have the application, try to {link_start}Open this section in SEB{link_end}.')).format(
+                link_start=HTML('<a href="{href}" id="seb-link-to-unit" >').format(href=jump_to_link),
+                link_end=HTML('</a>')
+                )}
+            </%block>
+        </p>
+        % endif
         <p style="text-align: center;">
             % if is_new_ban:
                 ${Text(_('Additionally you have been banned, you may ask your teacher or systems administrator to unblock you.'))}
